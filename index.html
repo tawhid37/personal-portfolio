@@ -3,22 +3,37 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light dark" />
+<meta name="darkreader-lock" />
 <title>Md. Tawhid Sultan — Software Engineer Portfolio</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2300A1E0'/%3E%3Cellipse cx='16' cy='9' rx='8' ry='3' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 16c0 1.66-3.58 3-8 3s-8-1.34-8-3M8 9v14c0 1.66 3.58 3 8 3s8-1.34 8-3V9' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+<script>
+(function(){
+  try {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var theme = saved || (prefersDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  } catch(e){}
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet" />
 <style>
 /* ============================================
-   CLOUD TOWER — DESIGN TOKENS
+   CLOUD TOWER — DESIGN TOKENS (LIGHT & DARK)
    ============================================ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
+:root, [data-theme="light"]{
+  color-scheme: light;
   --primary:#00A1E0;
   --primary-hover:#0088C7;
   --secondary:#032D60;
   --bg:#FFFFFF;
   --neutral:#F4F6F9;
   --surface:#F4F6F9;
+  --card-bg:#FFFFFF;
   --text-primary:#032D60;
   --text-secondary:#706E6B;
   --border:#D8DDE6;
@@ -34,10 +49,40 @@
   --shadow-1:0 2px 4px rgba(0,0,0,.07);
   --shadow-2:0 4px 14px rgba(0,0,0,.1);
   --shadow-nav:0 2px 4px rgba(0,0,0,.1);
+  --nav-bg:#032D60;
+  --hero-grid-line:rgba(3,45,96,.04);
+  --badge-bg:#D8DDE6;
+  --badge-text:#706E6B;
   --radius:4px;
   --radius-card:8px;
   --radius-lg:12px;
   --max-w:1280px;
+}
+[data-theme="dark"]{
+  color-scheme: dark;
+  --primary:#38BDF8;
+  --primary-hover:#0EA5E9;
+  --secondary:#0B1622;
+  --bg:#0B131E;
+  --neutral:#101B2B;
+  --surface:#101B2B;
+  --card-bg:#152234;
+  --text-primary:#E2E8F0;
+  --text-secondary:#94A3B8;
+  --border:#23354C;
+  --success:#10B981;
+  --warning:#F59E0B;
+  --error:#F87171;
+  --primary-tint:rgba(56,189,248,.15);
+  --success-tint:rgba(16,185,129,.15);
+  --focus-ring:0 0 0 3px rgba(56,189,248,.25);
+  --shadow-1:0 2px 4px rgba(0,0,0,.35);
+  --shadow-2:0 4px 14px rgba(0,0,0,.5);
+  --shadow-nav:0 2px 8px rgba(0,0,0,.4);
+  --nav-bg:#0A121D;
+  --hero-grid-line:rgba(226,232,240,.05);
+  --badge-bg:#1E2E44;
+  --badge-text:#94A3B8;
 }
 html{scroll-behavior:smooth}
 body{
@@ -49,6 +94,7 @@ body{
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
   overflow-x:hidden;
+  transition:background .25s ease,color .25s ease;
 }
 
 /* ============================================
@@ -60,15 +106,16 @@ a:hover{color:var(--primary-hover)}
 :focus-visible{outline:1px solid var(--primary);outline-offset:1px;box-shadow:var(--focus-ring)}
 
 /* ============================================
-   NAVBAR — 56px navy bar, blue active indicator
+   NAVBAR — 56px bar, blue active indicator
    ============================================ */
 #topnav{
   position:fixed;
   top:0;left:0;right:0;
   z-index:100;
   height:56px;
-  background:var(--secondary);
+  background:var(--nav-bg);
   box-shadow:var(--shadow-nav);
+  transition:background .25s ease;
 }
 .nav-inner{
   max-width:var(--max-w);
@@ -80,23 +127,21 @@ a:hover{color:var(--primary-hover)}
   justify-content:space-between;
   gap:1rem;
 }
-.nav-brand{
-  width:32px;height:32px;
-  flex-shrink:0;
-  border-radius:9999px;
-  background:var(--primary);
+.nav-brand-text{
+  font-family:var(--font-code);
+  font-size:15px;
+  font-weight:600;
   color:#fff;
-  font-family:var(--font-heading);
-  font-weight:700;
-  font-size:13px;
-  display:flex;
+  letter-spacing:-.01em;
+  display:inline-flex;
   align-items:center;
-  justify-content:center;
-  letter-spacing:.02em;
-  transition:background .2s;
+  white-space:nowrap;
+  text-decoration:none;
+  transition:opacity .2s;
 }
-.nav-brand:hover{background:var(--primary-hover)}
-.nav-links{display:flex;height:56px;overflow-x:auto;scrollbar-width:none}
+.nav-brand-text:hover{opacity:.85;color:#fff}
+.nav-brand-text .brand-accent{color:var(--primary);font-weight:700}
+.nav-links{display:flex;height:56px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
 .nav-links::-webkit-scrollbar{display:none}
 .nav-links a{
   height:56px;
@@ -112,6 +157,33 @@ a:hover{color:var(--primary-hover)}
 }
 .nav-links a:hover{color:#fff;background:rgba(255,255,255,.06)}
 .nav-links a.active{color:#fff;border-bottom-color:var(--primary);font-weight:600}
+
+/* Theme toggle button */
+.theme-toggle-btn{
+  width:36px;
+  height:36px;
+  border-radius:var(--radius);
+  background:transparent;
+  border:1px solid rgba(255,255,255,.2);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  flex-shrink:0;
+  transition:background .2s,border-color .2s,transform .15s;
+  padding:0;
+}
+.theme-toggle-btn:hover{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.45);
+}
+.theme-toggle-btn:active{transform:scale(.92)}
+.theme-toggle-btn svg{width:18px;height:18px}
+[data-theme="light"] .moon-icon{display:block}
+[data-theme="light"] .sun-icon{display:none}
+[data-theme="dark"] .moon-icon{display:none}
+[data-theme="dark"] .sun-icon{display:block}
 
 /* ============================================
    LAYOUT UTILITIES
@@ -153,8 +225,8 @@ a:hover{color:var(--primary-hover)}
   position:absolute;
   inset:0;
   background-image:
-    linear-gradient(rgba(3,45,96,.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(3,45,96,.04) 1px, transparent 1px);
+    linear-gradient(var(--hero-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hero-grid-line) 1px, transparent 1px);
   background-size:64px 64px;
   mask-image:radial-gradient(ellipse 80% 80% at 50% 45%, black 30%, transparent 75%);
   -webkit-mask-image:radial-gradient(ellipse 80% 80% at 50% 45%, black 30%, transparent 75%);
@@ -250,8 +322,8 @@ a:hover{color:var(--primary-hover)}
 .btn svg{width:16px;height:16px}
 .btn-primary{background:var(--primary);color:#fff}
 .btn-primary:hover{background:var(--primary-hover);color:#fff}
-.btn-secondary{background:#fff;border-color:var(--border);color:var(--text-primary)}
-.btn-secondary:hover{border-color:var(--primary);color:var(--primary-hover);background:#fff}
+.btn-secondary{background:var(--card-bg);border-color:var(--border);color:var(--text-primary)}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);background:var(--card-bg)}
 
 /* Hero metric panel — dashboard metric cards */
 .metric-panel{
@@ -264,12 +336,12 @@ a:hover{color:var(--primary-hover)}
   box-shadow:var(--shadow-1);
 }
 .metric-card{
-  background:#fff;
+  background:var(--card-bg);
   border:1px solid var(--border);
   border-radius:var(--radius-card);
   box-shadow:var(--shadow-1);
   padding:20px;
-  transition:box-shadow .2s,transform .2s;
+  transition:box-shadow .2s,transform .2s,background .2s,border-color .2s;
 }
 .metric-card:hover{box-shadow:var(--shadow-2);transform:translateY(-2px)}
 .metric-value{
@@ -326,7 +398,7 @@ a:hover{color:var(--primary-hover)}
   width:12px;
   height:12px;
   border-radius:9999px;
-  background:#fff;
+  background:var(--card-bg);
   border:2px solid var(--primary);
   translate:-50% 0;
 }
@@ -383,12 +455,12 @@ a:hover{color:var(--primary-hover)}
   gap:24px;
 }
 .project-card{
-  background:#fff;
+  background:var(--card-bg);
   border:1px solid var(--border);
   border-radius:var(--radius-card);
   box-shadow:var(--shadow-1);
   padding:24px;
-  transition:box-shadow .2s,transform .2s,border-color .2s;
+  transition:box-shadow .2s,transform .2s,border-color .2s,background .2s;
   position:relative;
   overflow:hidden;
 }
@@ -445,11 +517,12 @@ a:hover{color:var(--primary-hover)}
   gap:16px;
 }
 .skill-group{
-  background:#fff;
+  background:var(--card-bg);
   border:1px solid var(--border);
   border-radius:var(--radius-card);
   box-shadow:var(--shadow-1);
   padding:20px;
+  transition:background .2s,border-color .2s;
 }
 .skill-group-title{
   font-size:12px;
@@ -466,8 +539,8 @@ a:hover{color:var(--primary-hover)}
   height:24px;
   padding:0 8px;
   border-radius:var(--radius);
-  background:var(--border);
-  color:var(--text-secondary);
+  background:var(--badge-bg);
+  color:var(--badge-text);
   font-size:11px;
   font-weight:600;
   transition:background .2s,color .2s,transform .2s;
@@ -490,12 +563,12 @@ a:hover{color:var(--primary-hover)}
 }
 .edu-column{display:flex;flex-direction:column;gap:16px}
 .edu-item{
-  background:#fff;
+  background:var(--card-bg);
   border:1px solid var(--border);
   border-radius:var(--radius-card);
   box-shadow:var(--shadow-1);
   padding:20px;
-  transition:box-shadow .2s;
+  transition:box-shadow .2s,background .2s,border-color .2s;
 }
 .edu-item:hover{box-shadow:var(--shadow-2)}
 .edu-degree{font-weight:700;font-size:16px;margin-bottom:4px}
@@ -509,12 +582,12 @@ a:hover{color:var(--primary-hover)}
   display:inline-block;
 }
 .pub-card{
-  background:#fff;
+  background:var(--card-bg);
   border:1px solid var(--border);
   border-radius:var(--radius-card);
   box-shadow:var(--shadow-1);
   padding:24px;
-  transition:box-shadow .2s;
+  transition:box-shadow .2s,background .2s,border-color .2s;
   height:100%;
 }
 .pub-card:hover{box-shadow:var(--shadow-2)}
@@ -546,8 +619,9 @@ a:hover{color:var(--primary-hover)}
    ============================================ */
 .footer{
   padding:32px 0;
-  background:#fff;
+  background:var(--card-bg);
   border-top:1px solid var(--border);
+  transition:background .2s,border-color .2s;
 }
 .footer-content{
   max-width:var(--max-w);
@@ -654,7 +728,9 @@ a:hover{color:var(--primary-hover)}
 <!-- ========== NAVBAR ========== -->
 <nav id="topnav">
   <div class="nav-inner">
-    <a href="#home" class="nav-brand" aria-label="Md. Tawhid Sultan — home">TS</a>
+    <a href="#home" class="nav-brand-text" aria-label="Tawhid Sultan — home">
+      tawhid<span class="brand-accent">.dev</span>
+    </a>
     <div class="nav-links">
       <a href="#home">Home</a>
       <a href="#summary">Summary</a>
@@ -663,6 +739,22 @@ a:hover{color:var(--primary-hover)}
       <a href="#skills">Skills</a>
       <a href="#education">Education</a>
     </div>
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark and light mode" title="Toggle theme">
+      <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+      <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
   </div>
 </nav>
 
@@ -992,6 +1084,20 @@ a:hover{color:var(--primary-hover)}
   window.addEventListener('scroll', setActive, { passive: true });
   window.addEventListener('resize', setActive);
   setActive();
+})();
+
+/* Theme toggle handler */
+(function(){
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  btn.addEventListener('click', function(){
+    var current = document.documentElement.getAttribute('data-theme') || 'light';
+    var next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try {
+      localStorage.setItem('theme', next);
+    } catch(e){}
+  });
 })();
 </script>
 
