@@ -19,14 +19,14 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
 /* ============================================
-   CLOUD TOWER — DESIGN TOKENS (LIGHT & DARK)
+   CLOUD TOWER — SYSTEMS-ARCHITECTURE TOKENS
    ============================================ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root, [data-theme="light"]{
-  color-scheme: light;
+:root,[data-theme="light"]{
+  color-scheme:light;
   --primary:#00A1E0;
   --primary-hover:#0088C7;
   --secondary:#032D60;
@@ -34,32 +34,41 @@
   --neutral:#F4F6F9;
   --surface:#F4F6F9;
   --card-bg:#FFFFFF;
+  --card-elevated:linear-gradient(180deg, #FFFFFF 0%, #FAFBFD 100%);
   --text-primary:#032D60;
   --text-secondary:#706E6B;
   --border:#D8DDE6;
+  --border-strong:#BFC8D6;
   --success:#04844B;
   --warning:#FF9A3C;
   --error:#C23934;
-  --primary-tint:rgba(0,161,224,.1);
-  --success-tint:rgba(4,132,75,.1);
-  --focus-ring:0 0 0 3px rgba(0,161,224,.15);
+  --primary-tint:rgba(0,161,224,.10);
+  --primary-tint-strong:rgba(0,161,224,.18);
+  --success-tint:rgba(4,132,75,.10);
+  --spotlight-bg:rgba(0,161,224,.07);
+  --spotlight-border:rgba(0,161,224,.35);
+  --focus-ring:0 0 0 3px rgba(0,161,224,.18);
   --font-body:'Nunito Sans',sans-serif;
   --font-heading:'Nunito Sans',sans-serif;
   --font-code:'Source Code Pro',monospace;
-  --shadow-1:0 2px 4px rgba(0,0,0,.07);
-  --shadow-2:0 4px 14px rgba(0,0,0,.1);
-  --shadow-nav:0 2px 4px rgba(0,0,0,.1);
-  --nav-bg:#032D60;
-  --hero-grid-line:rgba(3,45,96,.04);
-  --badge-bg:#D8DDE6;
-  --badge-text:#706E6B;
+  --shadow-1:0 1px 2px rgba(3,45,96,.05),0 4px 12px rgba(3,45,96,.04);
+  --shadow-2:0 8px 24px rgba(3,45,96,.10),0 2px 6px rgba(3,45,96,.06);
+  --shadow-nav:0 4px 20px rgba(3,45,96,.14);
+  --nav-bg:rgba(3,45,96,.90);
+  --nav-border:rgba(255,255,255,.10);
+  --hero-grid-line:rgba(3,45,96,.045);
+  --hero-grid-glow:rgba(0,161,224,.14);
+  --badge-bg:#E6ECF2;
+  --badge-text:#545963;
+  --kbd-bg:rgba(255,255,255,.12);
+  --kbd-border:rgba(255,255,255,.22);
   --radius:4px;
-  --radius-card:8px;
-  --radius-lg:12px;
+  --radius-card:10px;
+  --radius-lg:14px;
   --max-w:1280px;
 }
 [data-theme="dark"]{
-  color-scheme: dark;
+  color-scheme:dark;
   --primary:#38BDF8;
   --primary-hover:#0EA5E9;
   --secondary:#0B1622;
@@ -67,22 +76,31 @@
   --neutral:#101B2B;
   --surface:#101B2B;
   --card-bg:#152234;
+  --card-elevated:linear-gradient(180deg, #172539 0%, #121E2F 100%);
   --text-primary:#E2E8F0;
   --text-secondary:#94A3B8;
   --border:#23354C;
+  --border-strong:#334B69;
   --success:#10B981;
   --warning:#F59E0B;
   --error:#F87171;
-  --primary-tint:rgba(56,189,248,.15);
+  --primary-tint:rgba(56,189,248,.14);
+  --primary-tint-strong:rgba(56,189,248,.22);
   --success-tint:rgba(16,185,129,.15);
+  --spotlight-bg:rgba(56,189,248,.09);
+  --spotlight-border:rgba(56,189,248,.42);
   --focus-ring:0 0 0 3px rgba(56,189,248,.25);
-  --shadow-1:0 2px 4px rgba(0,0,0,.35);
-  --shadow-2:0 4px 14px rgba(0,0,0,.5);
-  --shadow-nav:0 2px 8px rgba(0,0,0,.4);
-  --nav-bg:#0A121D;
+  --shadow-1:0 2px 6px rgba(0,0,0,.35),0 1px 0 rgba(255,255,255,.03) inset;
+  --shadow-2:0 12px 28px rgba(0,0,0,.52),0 0 0 1px rgba(56,189,248,.12);
+  --shadow-nav:0 6px 24px rgba(0,0,0,.45);
+  --nav-bg:rgba(10,18,29,.84);
+  --nav-border:rgba(148,163,184,.14);
   --hero-grid-line:rgba(226,232,240,.05);
+  --hero-grid-glow:rgba(56,189,248,.15);
   --badge-bg:#1E2E44;
-  --badge-text:#94A3B8;
+  --badge-text:#A5B4C7;
+  --kbd-bg:rgba(148,163,184,.12);
+  --kbd-border:rgba(148,163,184,.25);
 }
 html{scroll-behavior:smooth}
 body{
@@ -103,29 +121,42 @@ body{
 h1,h2,h3,h4{font-family:var(--font-heading);font-weight:700;line-height:1.15;color:var(--text-primary)}
 a{color:var(--primary);text-decoration:none;transition:color .2s}
 a:hover{color:var(--primary-hover)}
-:focus-visible{outline:1px solid var(--primary);outline-offset:1px;box-shadow:var(--focus-ring)}
+:focus-visible{outline:1px solid var(--primary);outline-offset:2px;box-shadow:var(--focus-ring)}
 
 /* ============================================
-   NAVBAR — 56px bar, blue active indicator
+   NAVBAR — Translucent + Progress + Mobile Drawer
    ============================================ */
 #topnav{
   position:fixed;
   top:0;left:0;right:0;
   z-index:100;
-  height:56px;
+  height:58px;
   background:var(--nav-bg);
+  backdrop-filter:blur(12px) saturate(160%);
+  -webkit-backdrop-filter:blur(12px) saturate(160%);
+  border-bottom:1px solid var(--nav-border);
   box-shadow:var(--shadow-nav);
-  transition:background .25s ease;
+  transition:background .25s ease,border-color .25s ease;
+}
+.scroll-progress{
+  position:absolute;
+  left:0;right:0;bottom:0;
+  height:2px;
+  background:linear-gradient(90deg, var(--primary), #38BDF8);
+  transform-origin:0 50%;
+  transform:scaleX(0);
+  pointer-events:none;
+  z-index:2;
 }
 .nav-inner{
   max-width:var(--max-w);
-  height:56px;
+  height:58px;
   margin:0 auto;
   padding:0 24px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:1rem;
+  gap:16px;
 }
 .nav-brand-text{
   font-family:var(--font-code);
@@ -135,36 +166,82 @@ a:hover{color:var(--primary-hover)}
   letter-spacing:-.01em;
   display:inline-flex;
   align-items:center;
+  gap:8px;
   white-space:nowrap;
   text-decoration:none;
   transition:opacity .2s;
 }
-.nav-brand-text:hover{opacity:.85;color:#fff}
+.nav-brand-text:hover{opacity:.9;color:#fff}
+.nav-brand-dot{
+  width:7px;height:7px;
+  border-radius:9999px;
+  background:var(--primary);
+  box-shadow:0 0 8px var(--primary);
+}
 .nav-brand-text .brand-accent{color:var(--primary);font-weight:700}
-.nav-links{display:flex;height:56px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
-.nav-links::-webkit-scrollbar{display:none}
+.nav-links{
+  display:flex;
+  height:58px;
+  margin-left:auto;
+  gap:2px;
+}
 .nav-links a{
-  height:56px;
+  height:58px;
   display:flex;
   align-items:center;
-  padding:0 14px;
-  font-size:14px;
-  font-weight:400;
-  color:rgba(255,255,255,.8);
-  border-bottom:3px solid transparent;
+  padding:0 13px;
+  font-size:13.5px;
+  font-weight:600;
+  color:rgba(255,255,255,.76);
+  border-bottom:2px solid transparent;
   white-space:nowrap;
-  transition:color .2s,border-color .2s;
+  transition:color .2s,border-color .2s,background .2s;
 }
 .nav-links a:hover{color:#fff;background:rgba(255,255,255,.06)}
-.nav-links a.active{color:#fff;border-bottom-color:var(--primary);font-weight:600}
+.nav-links a.active{color:#fff;border-bottom-color:var(--primary)}
 
-/* Theme toggle button */
-.theme-toggle-btn{
-  width:36px;
-  height:36px;
-  border-radius:var(--radius);
-  background:transparent;
-  border:1px solid rgba(255,255,255,.2);
+.nav-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+.cmd-trigger-btn{
+  height:34px;
+  padding:0 10px;
+  border-radius:6px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.18);
+  color:rgba(255,255,255,.88);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--font-body);
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  transition:background .2s,border-color .2s,color .2s;
+}
+.cmd-trigger-btn:hover{
+  background:rgba(255,255,255,.14);
+  border-color:rgba(255,255,255,.35);
+  color:#fff;
+}
+.cmd-trigger-btn svg{width:14px;height:14px;color:var(--primary)}
+.kbd-hint{
+  font-family:var(--font-code);
+  font-size:10.5px;
+  font-weight:600;
+  padding:2px 6px;
+  border-radius:4px;
+  background:var(--kbd-bg);
+  border:1px solid var(--kbd-border);
+  color:rgba(255,255,255,.85);
+  line-height:1.2;
+}
+
+.theme-toggle-btn,.mobile-menu-btn{
+  width:34px;
+  height:34px;
+  border-radius:6px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.18);
   color:#fff;
   display:flex;
   align-items:center;
@@ -174,43 +251,133 @@ a:hover{color:var(--primary-hover)}
   transition:background .2s,border-color .2s,transform .15s;
   padding:0;
 }
-.theme-toggle-btn:hover{
-  background:rgba(255,255,255,.1);
-  border-color:rgba(255,255,255,.45);
+.theme-toggle-btn:hover,.mobile-menu-btn:hover{
+  background:rgba(255,255,255,.14);
+  border-color:rgba(255,255,255,.38);
 }
-.theme-toggle-btn:active{transform:scale(.92)}
-.theme-toggle-btn svg{width:18px;height:18px}
+.theme-toggle-btn:active,.mobile-menu-btn:active{transform:scale(.94)}
+.theme-toggle-btn svg,.mobile-menu-btn svg{width:17px;height:17px}
 [data-theme="light"] .moon-icon{display:block}
 [data-theme="light"] .sun-icon{display:none}
 [data-theme="dark"] .moon-icon{display:none}
 [data-theme="dark"] .sun-icon{display:block}
 
+.mobile-menu-btn{display:none}
+.mobile-menu-btn .close-icon{display:none}
+.mobile-menu-btn[aria-expanded="true"] .menu-icon{display:none}
+.mobile-menu-btn[aria-expanded="true"] .close-icon{display:block}
+
+/* Mobile Nav Drawer */
+.mobile-nav{
+  position:fixed;
+  top:58px;left:0;right:0;
+  z-index:99;
+  background:var(--nav-bg);
+  backdrop-filter:blur(14px) saturate(160%);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);
+  border-bottom:1px solid var(--nav-border);
+  box-shadow:var(--shadow-nav);
+  padding:12px 16px 16px;
+  display:none;
+  flex-direction:column;
+  gap:4px;
+  transform:translateY(-8px);
+  opacity:0;
+  transition:transform .2s ease,opacity .2s ease;
+}
+.mobile-nav.open{display:flex;transform:translateY(0);opacity:1}
+.mobile-nav a{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 12px;
+  border-radius:6px;
+  color:rgba(255,255,255,.85);
+  font-size:14px;
+  font-weight:600;
+  transition:background .15s,color .15s;
+}
+.mobile-nav a:hover{background:rgba(255,255,255,.08);color:#fff}
+.mobile-nav a.active{
+  background:rgba(56,189,248,.16);
+  color:#fff;
+  border-left:3px solid var(--primary);
+}
+.mobile-nav-cmd{
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:6px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-family:var(--font-body);
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+
 /* ============================================
-   LAYOUT UTILITIES
+   LAYOUT & SECTION HEADERS
    ============================================ */
 .container{width:100%;max-width:var(--max-w);margin:0 auto;padding:0 24px}
-.section{padding:64px 0;position:relative;scroll-margin-top:5rem}
+.section{padding:68px 0;position:relative;scroll-margin-top:5rem}
 .section-title{
   font-size:24px;
   font-weight:700;
-  letter-spacing:-.01em;
+  letter-spacing:-.015em;
   margin-bottom:32px;
   display:flex;
   align-items:center;
   gap:12px;
+  flex-wrap:wrap;
 }
 .section-title::before{
   content:'';
   display:inline-block;
-  width:40px;
+  width:36px;
   height:3px;
-  background:var(--primary);
+  background:linear-gradient(90deg, var(--primary), var(--primary-hover));
   border-radius:2px;
   flex-shrink:0;
 }
+.section-index{
+  font-family:var(--font-code);
+  font-size:11px;
+  font-weight:600;
+  color:var(--primary);
+  background:var(--primary-tint);
+  padding:3px 7px;
+  border-radius:4px;
+  letter-spacing:.04em;
+}
 
 /* ============================================
-   HERO — dashboard header
+   CURSOR SPOTLIGHT SURFACE
+   ============================================ */
+.spotlight-card{
+  position:relative;
+  overflow:hidden;
+  background:var(--card-elevated);
+}
+.spotlight-card::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:radial-gradient(360px circle at var(--cx, -999px) var(--cy, -999px), var(--spotlight-bg), transparent 65%);
+  opacity:0;
+  transition:opacity .25s ease;
+  pointer-events:none;
+  z-index:0;
+}
+.spotlight-card > *{position:relative;z-index:1}
+.spotlight-card:hover::after{opacity:1}
+
+/* ============================================
+   HERO — SYSTEMS ARCHITECTURE HEADER
    ============================================ */
 .hero{
   position:relative;
@@ -218,7 +385,7 @@ a:hover{color:var(--primary-hover)}
   display:flex;
   align-items:center;
   overflow:hidden;
-  padding:120px 0 64px;
+  padding:116px 0 68px;
   background:var(--bg);
 }
 .hero-grid{
@@ -227,10 +394,18 @@ a:hover{color:var(--primary-hover)}
   background-image:
     linear-gradient(var(--hero-grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--hero-grid-line) 1px, transparent 1px);
-  background-size:64px 64px;
-  mask-image:radial-gradient(ellipse 80% 80% at 50% 45%, black 30%, transparent 75%);
-  -webkit-mask-image:radial-gradient(ellipse 80% 80% at 50% 45%, black 30%, transparent 75%);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse 85% 80% at 50% 45%, black 35%, transparent 78%);
+  -webkit-mask-image:radial-gradient(ellipse 85% 80% at 50% 45%, black 35%, transparent 78%);
   pointer-events:none;
+}
+.hero-spotlight{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(560px circle at var(--hx, 50%) var(--hy, 40%), var(--hero-grid-glow), transparent 65%);
+  pointer-events:none;
+  opacity:.85;
+  transition:opacity .3s ease;
 }
 .hero-content{
   position:relative;
@@ -252,42 +427,50 @@ a:hover{color:var(--primary-hover)}
   padding:0 12px;
   background:var(--success-tint);
   color:var(--success);
-  border-radius:var(--radius);
+  border:1px solid rgba(16,185,129,.22);
+  border-radius:9999px;
   font-size:12px;
   font-weight:600;
   letter-spacing:.02em;
   margin-bottom:24px;
 }
 .hero-badge-dot{
-  width:6px;height:6px;
+  width:7px;height:7px;
   border-radius:9999px;
   background:var(--success);
+  box-shadow:0 0 0 3px var(--success-tint);
   animation:pulse 2s ease-in-out infinite;
 }
 @keyframes pulse{
-  0%,100%{opacity:1}
-  50%{opacity:.3}
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.45;transform:scale(.92)}
 }
 .hero-name{
   font-size:clamp(2.5rem,6vw,4rem);
-  font-weight:700;
-  letter-spacing:-.02em;
+  font-weight:800;
+  letter-spacing:-.025em;
   line-height:1.02;
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 .hero-name .accent{color:var(--primary)}
 .hero-title{
   font-size:16px;
   color:var(--text-secondary);
-  font-weight:400;
-  margin-bottom:32px;
+  font-weight:600;
+  margin-bottom:28px;
   font-family:var(--font-body);
 }
 .hero-contact{
   display:flex;
   flex-wrap:wrap;
-  gap:12px 24px;
-  margin-bottom:32px;
+  gap:10px 20px;
+  margin-bottom:28px;
+  align-items:center;
+}
+.hero-contact-group{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
 }
 .hero-contact-item{
   display:inline-flex;
@@ -297,12 +480,41 @@ a:hover{color:var(--primary-hover)}
   font-size:14px;
   transition:color .2s;
 }
-.hero-contact-item:hover{color:var(--text-primary)}
+a.hero-contact-item:hover{color:var(--primary)}
 .hero-contact-item svg{
   width:16px;height:16px;
   flex-shrink:0;
   color:var(--primary);
 }
+.copy-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:24px;height:24px;
+  border-radius:5px;
+  background:transparent;
+  border:1px solid transparent;
+  color:var(--text-secondary);
+  cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s,transform .15s;
+  padding:0;
+}
+.copy-btn:hover{
+  background:var(--primary-tint);
+  border-color:var(--spotlight-border);
+  color:var(--primary);
+}
+.copy-btn:active{transform:scale(.9)}
+.copy-btn.copied{
+  color:var(--success);
+  background:var(--success-tint);
+  border-color:rgba(16,185,129,.3);
+}
+.copy-btn svg{width:13px;height:13px}
+.copy-btn .check-icon{display:none}
+.copy-btn.copied .copy-icon{display:none}
+.copy-btn.copied .check-icon{display:block}
+
 .hero-links{display:flex;flex-wrap:wrap;gap:12px}
 .btn{
   display:inline-flex;
@@ -311,123 +523,211 @@ a:hover{color:var(--primary-hover)}
   gap:8px;
   height:40px;
   padding:0 16px;
-  border-radius:var(--radius);
+  border-radius:6px;
   font-family:var(--font-body);
   font-size:13px;
-  font-weight:600;
+  font-weight:700;
   border:1px solid transparent;
   cursor:pointer;
-  transition:background .2s,border-color .2s,color .2s,box-shadow .2s;
+  transition:background .2s,border-color .2s,color .2s,box-shadow .2s,transform .15s;
 }
+.btn:active{transform:translateY(1px)}
 .btn svg{width:16px;height:16px}
-.btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover{background:var(--primary-hover);color:#fff}
-.btn-secondary{background:var(--card-bg);border-color:var(--border);color:var(--text-primary)}
-.btn-secondary:hover{border-color:var(--primary);color:var(--primary);background:var(--card-bg)}
-
-/* Hero metric panel — dashboard metric cards */
-.metric-panel{
-  background:var(--surface);
-  border-radius:var(--radius-lg);
-  padding:16px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
+.btn-primary{
+  background:var(--primary);
+  color:#fff;
+  box-shadow:0 2px 8px rgba(0,161,224,.25);
+}
+.btn-primary:hover{
+  background:var(--primary-hover);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(0,161,224,.35);
+}
+.btn-secondary{
+  background:var(--card-bg);
+  border-color:var(--border);
+  color:var(--text-primary);
   box-shadow:var(--shadow-1);
 }
-.metric-card{
+.btn-secondary:hover{
+  border-color:var(--primary);
+  color:var(--primary);
   background:var(--card-bg);
+}
+
+/* Hero metric panel */
+.metric-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:14px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  box-shadow:var(--shadow-2);
+}
+.metric-card{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
   border:1px solid var(--border);
   border-radius:var(--radius-card);
   box-shadow:var(--shadow-1);
-  padding:20px;
-  transition:box-shadow .2s,transform .2s,background .2s,border-color .2s;
+  padding:18px 18px 16px;
+  color:inherit;
+  text-decoration:none;
+  transition:box-shadow .22s,transform .22s,border-color .22s;
 }
-.metric-card:hover{box-shadow:var(--shadow-2);transform:translateY(-2px)}
+.metric-card:hover{
+  box-shadow:var(--shadow-2);
+  border-color:var(--spotlight-border);
+  transform:translateY(-2px);
+  color:inherit;
+}
+.metric-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:8px;
+}
 .metric-value{
   font-family:var(--font-heading);
   font-size:32px;
-  font-weight:700;
+  font-weight:800;
   line-height:1.1;
   color:var(--text-primary);
+  font-variant-numeric:tabular-nums;
 }
 .metric-value .unit{font-size:20px;color:var(--primary)}
+.metric-jump-icon{
+  width:14px;height:14px;
+  color:var(--text-secondary);
+  opacity:.5;
+  transition:transform .2s,color .2s,opacity .2s;
+  flex-shrink:0;
+  margin-top:4px;
+}
+.metric-card:hover .metric-jump-icon{
+  color:var(--primary);
+  opacity:1;
+  transform:translate(2px,-2px);
+}
 .metric-label{
   font-size:13px;
-  font-weight:400;
+  font-weight:600;
   color:var(--text-secondary);
-  margin-top:4px;
+  margin-top:8px;
 }
 
 /* ============================================
    SUMMARY
    ============================================ */
-.summary{background:var(--surface)}
+.summary{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 .summary-content{
   position:relative;
-  padding-left:20px;
+  padding:24px 24px 24px 26px;
+  background:var(--card-elevated);
+  border:1px solid var(--border);
   border-left:3px solid var(--primary);
+  border-radius:var(--radius-card);
+  box-shadow:var(--shadow-1);
 }
 .summary-text{
-  font-size:16px;
+  font-size:15.5px;
   color:var(--text-secondary);
-  max-width:70ch;
-  line-height:1.75;
+  max-width:78ch;
+  line-height:1.78;
 }
 
 /* ============================================
-   EXPERIENCE / TIMELINE
+   EXPERIENCE / TIMELINE CARDS
    ============================================ */
-.timeline{position:relative;padding-left:24px}
+.timeline{position:relative;padding-left:28px}
 .timeline::before{
   content:'';
   position:absolute;
-  left:0;
-  top:.5rem;
-  bottom:.5rem;
+  left:6px;
+  top:12px;
+  bottom:12px;
   width:2px;
-  background:var(--border);
+  background:linear-gradient(180deg, var(--primary) 0%, var(--border) 100%);
   border-radius:2px;
 }
-.timeline-item{position:relative;padding:0 0 32px 24px}
+.timeline-item{position:relative;padding:0 0 24px 20px}
 .timeline-item:last-child{padding-bottom:0}
 .timeline-dot{
   position:absolute;
-  left:0;
-  top:.4rem;
+  left:-21px;
+  top:22px;
   width:12px;
   height:12px;
   border-radius:9999px;
   background:var(--card-bg);
-  border:2px solid var(--primary);
-  translate:-50% 0;
+  border:2px solid var(--border-strong);
+  z-index:2;
 }
-.timeline-dot::after{
+.timeline-dot--active{
+  border-color:var(--primary);
+  background:var(--primary);
+  box-shadow:0 0 0 4px var(--primary-tint);
+}
+.timeline-dot--active::after{
   content:'';
   position:absolute;
-  inset:-4px;
+  inset:-6px;
   border-radius:9999px;
-  background:var(--primary-tint);
-  animation:pulse 3s ease-in-out infinite;
+  border:1px solid var(--primary);
+  opacity:.45;
+  animation:pulseRing 2.6s ease-out infinite;
+}
+@keyframes pulseRing{
+  0%{transform:scale(.8);opacity:.65}
+  100%{transform:scale(1.6);opacity:0}
+}
+.timeline-card{
+  border:1px solid var(--border);
+  border-radius:var(--radius-card);
+  box-shadow:var(--shadow-1);
+  padding:22px 24px;
+  transition:box-shadow .22s,border-color .22s,transform .22s;
+}
+.timeline-card:hover{
+  box-shadow:var(--shadow-2);
+  border-color:var(--spotlight-border);
+  transform:translateY(-1px);
 }
 .timeline-header{
   display:flex;
   flex-wrap:wrap;
-  align-items:baseline;
-  gap:8px 16px;
-  margin-bottom:12px;
+  align-items:center;
+  gap:8px 14px;
+  margin-bottom:14px;
 }
-.timeline-company{font-weight:700;font-size:16px}
+.timeline-company{font-weight:700;font-size:17px;color:var(--text-primary)}
 .timeline-role{
   color:var(--primary);
-  font-size:13px;
-  font-weight:600;
+  background:var(--primary-tint);
+  padding:3px 9px;
+  border-radius:4px;
+  font-size:12px;
+  font-weight:700;
+}
+.timeline-date-wrap{
+  margin-left:auto;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+.timeline-status-dot{
+  width:7px;height:7px;
+  border-radius:9999px;
+  background:var(--success);
+  box-shadow:0 0 0 3px var(--success-tint);
 }
 .timeline-date{
   color:var(--text-secondary);
   font-size:12px;
   font-weight:600;
-  margin-left:auto;
   white-space:nowrap;
   font-family:var(--font-code);
 }
@@ -437,17 +737,18 @@ a:hover{color:var(--primary-hover)}
   padding-left:20px;
   color:var(--text-secondary);
   font-size:14px;
+  line-height:1.6;
 }
 .timeline-list li::before{
   content:'→';
   position:absolute;
   left:0;
   color:var(--primary);
-  font-weight:600;
+  font-weight:700;
 }
 
 /* ============================================
-   PROJECTS
+   PROJECTS (structure preserved, elevated cards)
    ============================================ */
 .projects-grid{
   display:grid;
@@ -455,37 +756,41 @@ a:hover{color:var(--primary-hover)}
   gap:24px;
 }
 .project-card{
-  background:var(--card-bg);
   border:1px solid var(--border);
   border-radius:var(--radius-card);
   box-shadow:var(--shadow-1);
   padding:24px;
-  transition:box-shadow .2s,transform .2s,border-color .2s,background .2s;
-  position:relative;
-  overflow:hidden;
+  transition:box-shadow .22s,transform .22s,border-color .22s;
+  scroll-margin-top:5.5rem;
 }
 .project-card::before{
   content:'';
   position:absolute;
   top:0;left:0;right:0;
   height:2px;
-  background:var(--primary);
+  background:linear-gradient(90deg, var(--primary), #38BDF8);
   opacity:0;
   transition:opacity .2s;
+  z-index:2;
 }
 .project-card:hover{
-  border-color:var(--primary);
+  border-color:var(--spotlight-border);
   box-shadow:var(--shadow-2);
   transform:translateY(-2px);
 }
 .project-card:hover::before{opacity:1}
+.project-card.is-highlighted{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px var(--primary-tint), var(--shadow-2);
+}
+.project-card.is-highlighted::before{opacity:1}
 .project-name{font-weight:700;font-size:20px;margin-bottom:8px}
 .project-type{
   display:inline-block;
   background:var(--primary-tint);
   color:var(--primary-hover);
   font-size:11px;
-  font-weight:600;
+  font-weight:700;
   text-transform:uppercase;
   letter-spacing:.05em;
   border-radius:var(--radius);
@@ -498,58 +803,198 @@ a:hover{color:var(--primary-hover)}
   padding-left:16px;
   color:var(--text-secondary);
   font-size:13px;
-  line-height:1.55;
+  line-height:1.58;
 }
 .project-list li::before{
   content:'–';
   position:absolute;
   left:0;
-  color:var(--text-secondary);
+  color:var(--primary);
+  font-weight:700;
 }
 
 /* ============================================
-   SKILLS
+   SKILLS — 3x3 GRID, FILTER TABS & SEARCH
    ============================================ */
-.skills{background:var(--surface)}
+.skills{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.skills-toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px 16px;
+  margin-bottom:24px;
+}
+.skills-tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.skills-tab{
+  height:34px;
+  padding:0 12px;
+  border-radius:6px;
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  color:var(--text-secondary);
+  font-family:var(--font-body);
+  font-size:12.5px;
+  font-weight:700;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  transition:all .18s ease;
+}
+.skills-tab:hover{border-color:var(--primary);color:var(--text-primary)}
+.skills-tab.active{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:#fff;
+  box-shadow:0 2px 8px rgba(0,161,224,.22);
+}
+.skills-tab-count{
+  font-family:var(--font-code);
+  font-size:11px;
+  opacity:.82;
+}
+.skills-search-wrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+  min-width:220px;
+  flex:0 1 280px;
+}
+.skills-search-icon{
+  position:absolute;
+  left:10px;
+  width:15px;height:15px;
+  color:var(--text-secondary);
+  pointer-events:none;
+}
+.skills-search{
+  width:100%;
+  height:34px;
+  padding:0 30px 0 32px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--card-bg);
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  font-size:13px;
+  transition:border-color .18s,box-shadow .18s;
+}
+.skills-search::placeholder{color:var(--text-secondary)}
+.skills-search:focus{outline:none;border-color:var(--primary);box-shadow:var(--focus-ring)}
+.skills-search-clear{
+  position:absolute;
+  right:6px;
+  width:22px;height:22px;
+  border-radius:4px;
+  border:none;
+  background:transparent;
+  color:var(--text-secondary);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+.skills-search-clear.visible{display:flex}
+.skills-search-clear:hover{background:var(--primary-tint);color:var(--primary)}
+.skills-search-clear svg{width:13px;height:13px}
+
 .skills-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(260px,1fr));
+  grid-template-columns:repeat(3, minmax(0, 1fr));
   gap:16px;
 }
+.skills-grid[data-visible-count="2"],
+.skills-grid[data-visible-count="4"]{
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+}
+.skills-grid[data-visible-count="1"]{
+  grid-template-columns:1fr;
+}
 .skill-group{
-  background:var(--card-bg);
   border:1px solid var(--border);
   border-radius:var(--radius-card);
   box-shadow:var(--shadow-1);
   padding:20px;
-  transition:background .2s,border-color .2s;
+  transition:box-shadow .2s,border-color .2s,transform .2s;
 }
+.skill-group:hover{
+  box-shadow:var(--shadow-2);
+  border-color:var(--spotlight-border);
+}
+.skill-group.is-hidden{display:none}
+.skill-group-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:14px;
+}
+.skill-group-icon{
+  width:24px;height:24px;
+  border-radius:6px;
+  background:var(--primary-tint);
+  color:var(--primary);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.skill-group-icon svg{width:14px;height:14px}
 .skill-group-title{
   font-size:12px;
   font-weight:700;
   text-transform:uppercase;
-  letter-spacing:.05em;
+  letter-spacing:.06em;
   color:var(--text-secondary);
-  margin-bottom:12px;
+  margin:0;
 }
 .skill-badges{display:flex;flex-wrap:wrap;gap:8px}
 .skill-badge{
   display:inline-flex;
   align-items:center;
-  height:24px;
-  padding:0 8px;
-  border-radius:var(--radius);
+  height:26px;
+  padding:0 9px;
+  border-radius:5px;
   background:var(--badge-bg);
   color:var(--badge-text);
-  font-size:11px;
+  font-size:11.5px;
   font-weight:600;
-  transition:background .2s,color .2s,transform .2s;
+  border:1px solid transparent;
+  transition:background .18s,color .18s,border-color .18s,transform .18s,opacity .18s;
   cursor:default;
 }
 .skill-badge:hover{
   background:var(--primary-tint);
   color:var(--primary-hover);
+  border-color:var(--spotlight-border);
   transform:translateY(-1px);
+}
+.skill-badge.is-match{
+  background:var(--primary-tint-strong);
+  color:var(--primary);
+  border-color:var(--primary);
+}
+.skill-badge.is-dim{opacity:.35}
+
+.skills-empty{
+  display:none;
+  padding:28px 20px;
+  text-align:center;
+  background:var(--card-bg);
+  border:1px dashed var(--border-strong);
+  border-radius:var(--radius-card);
+  color:var(--text-secondary);
+  font-size:13.5px;
+}
+.skills-empty.visible{display:block}
+.skills-empty button{
+  margin-top:10px;
+  height:32px;
+  padding:0 12px;
 }
 
 /* ============================================
@@ -559,18 +1004,22 @@ a:hover{color:var(--primary-hover)}
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:24px;
-  align-items:start;
+  align-items:stretch;
 }
 .edu-column{display:flex;flex-direction:column;gap:16px}
 .edu-item{
-  background:var(--card-bg);
   border:1px solid var(--border);
   border-radius:var(--radius-card);
   box-shadow:var(--shadow-1);
-  padding:20px;
-  transition:box-shadow .2s,background .2s,border-color .2s;
+  padding:22px;
+  transition:box-shadow .22s,border-color .22s,transform .22s;
+  flex:1;
 }
-.edu-item:hover{box-shadow:var(--shadow-2)}
+.edu-item:hover{
+  box-shadow:var(--shadow-2);
+  border-color:var(--spotlight-border);
+  transform:translateY(-1px);
+}
 .edu-degree{font-weight:700;font-size:16px;margin-bottom:4px}
 .edu-institution{color:var(--text-secondary);font-size:14px}
 .edu-date{
@@ -578,19 +1027,27 @@ a:hover{color:var(--primary-hover)}
   font-size:12px;
   font-weight:600;
   font-family:var(--font-code);
-  margin-top:8px;
+  margin-top:10px;
   display:inline-block;
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:2px 8px;
+  border-radius:4px;
 }
 .pub-card{
-  background:var(--card-bg);
   border:1px solid var(--border);
   border-radius:var(--radius-card);
   box-shadow:var(--shadow-1);
   padding:24px;
-  transition:box-shadow .2s,background .2s,border-color .2s;
+  transition:box-shadow .22s,border-color .22s,transform .22s;
   height:100%;
+  scroll-margin-top:5.5rem;
 }
-.pub-card:hover{box-shadow:var(--shadow-2)}
+.pub-card:hover{
+  box-shadow:var(--shadow-2);
+  border-color:var(--spotlight-border);
+  transform:translateY(-1px);
+}
 .pub-card-label{
   display:inline-block;
   font-size:11px;
@@ -603,22 +1060,36 @@ a:hover{color:var(--primary-hover)}
   padding:4px 8px;
   margin-bottom:12px;
 }
-.pub-card-title{font-weight:700;font-size:16px;margin-bottom:12px;line-height:1.3}
-.pub-card-doi{
-  display:block;
-  font-size:12px;
-  color:var(--text-secondary);
-  font-family:var(--font-code);
-  margin-bottom:12px;
-  word-break:break-all;
+.pub-card-title{font-weight:700;font-size:16px;margin-bottom:12px;line-height:1.35}
+.pub-doi-row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+  margin-bottom:14px;
 }
-.pub-card-desc{font-size:13px;color:var(--text-secondary);line-height:1.65}
+.pub-card-doi{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  color:var(--primary);
+  font-family:var(--font-code);
+  font-weight:600;
+  word-break:break-all;
+  padding:3px 8px;
+  background:var(--primary-tint);
+  border-radius:4px;
+}
+.pub-card-doi:hover{text-decoration:underline}
+.pub-card-doi svg{width:12px;height:12px;flex-shrink:0}
+.pub-card-desc{font-size:13.5px;color:var(--text-secondary);line-height:1.68}
 
 /* ============================================
    FOOTER
    ============================================ */
 .footer{
-  padding:32px 0;
+  padding:28px 0;
   background:var(--card-bg);
   border-top:1px solid var(--border);
   transition:background .2s,border-color .2s;
@@ -634,86 +1105,73 @@ a:hover{color:var(--primary-hover)}
   gap:16px;
 }
 .footer-name{font-weight:600;font-size:14px;color:var(--text-primary)}
-.footer-links{display:flex;gap:24px}
+.footer-links{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
 .footer-links a{color:var(--text-secondary);font-size:13px;font-weight:600}
 .footer-links a:hover{color:var(--primary)}
+.footer-top-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  height:28px;
+  padding:0 10px;
+  border-radius:5px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text-secondary);
+  font-family:var(--font-code);
+  font-size:11px;
+  font-weight:600;
+  cursor:pointer;
+  transition:border-color .15s,color .15s;
+}
+.footer-top-btn:hover{border-color:var(--primary);color:var(--primary)}
 
 /* ============================================
-   SCROLL ANIMATIONS (CSS only)
+   SCROLL & INITIAL REVEAL ANIMATIONS
    ============================================ */
 .animate-in{
   opacity:0;
-  translate:0 2rem;
-  animation:fadeUp .6s cubic-bezier(.25,.46,.45,.94) forwards;
+  translate:0 1.4rem;
+  animation:fadeUp .55s cubic-bezier(.25,.46,.45,.94) forwards;
 }
-.animate-in-d1{animation-delay:.1s}
-.animate-in-d2{animation-delay:.2s}
-.animate-in-d3{animation-delay:.3s}
-.animate-in-d4{animation-delay:.4s}
-.animate-in-d5{animation-delay:.5s}
-.animate-in-d6{animation-delay:.6s}
-
+.animate-in-d1{animation-delay:.08s}
+.animate-in-d2{animation-delay:.16s}
+.animate-in-d3{animation-delay:.24s}
+.animate-in-d4{animation-delay:.32s}
 @keyframes fadeUp{
   to{opacity:1;translate:0 0}
 }
 
-/* staggered children */
-.stagger>*{opacity:0;translate:0 1.5rem;animation:fadeUp .5s cubic-bezier(.25,.46,.45,.94) forwards}
-.stagger>*:nth-child(1){animation-delay:.05s}
-.stagger>*:nth-child(2){animation-delay:.1s}
-.stagger>*:nth-child(3){animation-delay:.15s}
-.stagger>*:nth-child(4){animation-delay:.2s}
-.stagger>*:nth-child(5){animation-delay:.25s}
-.stagger>*:nth-child(6){animation-delay:.3s}
-.stagger>*:nth-child(7){animation-delay:.35s}
-.stagger>*:nth-child(8){animation-delay:.4s}
-.stagger>*:nth-child(9){animation-delay:.45s}
-.stagger>*:nth-child(10){animation-delay:.5s}
-.stagger>*:nth-child(11){animation-delay:.55s}
-.stagger>*:nth-child(12){animation-delay:.6s}
-.stagger>*:nth-child(13){animation-delay:.65s}
-.stagger>*:nth-child(14){animation-delay:.7s}
-.stagger>*:nth-child(15){animation-delay:.75s}
-.stagger>*:nth-child(16){animation-delay:.8s}
-.stagger>*:nth-child(17){animation-delay:.85s}
-.stagger>*:nth-child(18){animation-delay:.9s}
-.stagger>*:nth-child(19){animation-delay:.95s}
-.stagger>*:nth-child(20){animation-delay:1s}
+.reveal{
+  opacity:0;
+  transform:translateY(20px);
+  transition:opacity .55s cubic-bezier(.22,1,.36,1),transform .55s cubic-bezier(.22,1,.36,1);
+}
+.reveal.is-visible{
+  opacity:1;
+  transform:translateY(0);
+}
+.reveal-stagger > *{
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity .48s cubic-bezier(.22,1,.36,1),transform .48s cubic-bezier(.22,1,.36,1);
+}
+.reveal-stagger.is-visible > *{
+  opacity:1;
+  transform:translateY(0);
+}
+.reveal-stagger.is-visible > *:nth-child(1){transition-delay:.03s}
+.reveal-stagger.is-visible > *:nth-child(2){transition-delay:.08s}
+.reveal-stagger.is-visible > *:nth-child(3){transition-delay:.13s}
+.reveal-stagger.is-visible > *:nth-child(4){transition-delay:.18s}
+.reveal-stagger.is-visible > *:nth-child(5){transition-delay:.23s}
+.reveal-stagger.is-visible > *:nth-child(6){transition-delay:.28s}
+.reveal-stagger.is-visible > *:nth-child(7){transition-delay:.33s}
+.reveal-stagger.is-visible > *:nth-child(8){transition-delay:.38s}
+.reveal-stagger.is-visible > *:nth-child(9){transition-delay:.43s}
 
 /* ============================================
-   RESPONSIVE
-   ============================================ */
-@media(max-width:1024px){
-  .hero-content{grid-template-columns:1fr;gap:40px}
-  .metric-panel{max-width:560px}
-}
-@media(max-width:768px){
-  .section{padding:48px 0}
-  .hero{padding:104px 0 48px;min-height:auto}
-  .hero-name{font-size:clamp(2rem,9vw,3rem)}
-  .hero-title{font-size:14px}
-  .hero-contact{flex-direction:column;gap:8px}
-  .hero-links{flex-direction:column;gap:8px}
-  .btn{width:fit-content}
-  .projects-grid{grid-template-columns:1fr}
-  .skills-grid{grid-template-columns:1fr}
-  .edu-pub-grid{grid-template-columns:1fr;gap:24px}
-  .timeline{padding-left:20px}
-  .timeline-item{padding-left:20px}
-  .timeline-date{margin-left:0;width:100%}
-  .section-title{margin-bottom:24px;font-size:20px}
-  .nav-inner{padding:0 16px}
-  .nav-links a{padding:0 10px;font-size:13px}
-}
-@media(max-width:480px){
-  .metric-panel{grid-template-columns:1fr 1fr;gap:8px;padding:8px}
-  .metric-card{padding:14px}
-  .metric-value{font-size:24px}
-  .nav-links a{padding:0 8px;font-size:12px}
-}
-
-/* ============================================
-   CV PREVIEW MODAL
+   MODALS (CV PREVIEW & COMMAND PALETTE)
    ============================================ */
 .btn-sm{height:32px;padding:0 12px;font-size:12px;gap:6px}
 .modal-backdrop{
@@ -727,7 +1185,7 @@ a:hover{color:var(--primary-hover)}
   align-items:center;
   justify-content:center;
   padding:20px;
-  animation:fadeIn .2s ease-out;
+  animation:fadeIn .18s ease-out;
 }
 .modal-backdrop.open{display:flex}
 .modal-card{
@@ -742,7 +1200,7 @@ a:hover{color:var(--primary-hover)}
   flex-direction:column;
   box-shadow:var(--shadow-2);
   overflow:hidden;
-  animation:scaleUp .25s cubic-bezier(.25,.46,.45,.94);
+  animation:scaleUp .22s cubic-bezier(.25,.46,.45,.94);
 }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes scaleUp{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
@@ -762,6 +1220,9 @@ a:hover{color:var(--primary-hover)}
   font-weight:700;
   color:var(--text-primary);
   margin:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
 .modal-actions{display:flex;align-items:center;gap:8px}
 .modal-close-btn{
@@ -796,23 +1257,237 @@ a:hover{color:var(--primary-hover)}
   display:block;
 }
 
+/* Command Palette */
+.cmd-backdrop{
+  align-items:flex-start;
+  padding-top:min(14vh, 110px);
+}
+.cmd-dialog{
+  width:100%;
+  max-width:580px;
+  background:var(--card-bg);
+  border:1px solid var(--border-strong);
+  border-radius:var(--radius-lg);
+  box-shadow:0 24px 60px rgba(0,0,0,.35);
+  overflow:hidden;
+  animation:scaleUp .18s cubic-bezier(.22,1,.36,1);
+}
+.cmd-input-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 14px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+}
+.cmd-input-row svg{width:17px;height:17px;color:var(--primary);flex-shrink:0}
+.cmd-input{
+  flex:1;
+  border:none;
+  background:transparent;
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  font-size:14.5px;
+  outline:none;
+}
+.cmd-input::placeholder{color:var(--text-secondary)}
+.cmd-esc{
+  font-family:var(--font-code);
+  font-size:11px;
+  font-weight:600;
+  color:var(--text-secondary);
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:2px 6px;
+}
+.cmd-list{
+  max-height:360px;
+  overflow-y:auto;
+  padding:8px;
+}
+.cmd-group-label{
+  font-family:var(--font-code);
+  font-size:10.5px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--text-secondary);
+  padding:8px 10px 4px;
+}
+.cmd-item{
+  width:100%;
+  border:none;
+  background:transparent;
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  font-size:13.5px;
+  font-weight:600;
+  padding:9px 10px;
+  border-radius:7px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  cursor:pointer;
+  text-align:left;
+  transition:background .12s,color .12s;
+}
+.cmd-item:hover,.cmd-item.is-selected{
+  background:var(--primary-tint);
+  color:var(--primary);
+}
+.cmd-item-left{display:flex;align-items:center;gap:10px;min-width:0}
+.cmd-item-icon{
+  width:24px;height:24px;
+  border-radius:5px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  color:var(--text-secondary);
+}
+.cmd-item.is-selected .cmd-item-icon,
+.cmd-item:hover .cmd-item-icon{
+  border-color:var(--spotlight-border);
+  color:var(--primary);
+}
+.cmd-item-icon svg{width:13px;height:13px}
+.cmd-item-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmd-item-meta{
+  font-family:var(--font-code);
+  font-size:11px;
+  color:var(--text-secondary);
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.cmd-empty{
+  padding:24px 12px;
+  text-align:center;
+  color:var(--text-secondary);
+  font-size:13px;
+}
+.cmd-footer{
+  padding:8px 14px;
+  border-top:1px solid var(--border);
+  background:var(--surface);
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:11.5px;
+  color:var(--text-secondary);
+  font-family:var(--font-code);
+}
+
+/* ============================================
+   TOAST NOTIFICATION
+   ============================================ */
+.toast{
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  z-index:300;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 14px;
+  border-radius:8px;
+  background:var(--secondary);
+  color:#fff;
+  border:1px solid var(--primary);
+  box-shadow:var(--shadow-2);
+  font-size:13px;
+  font-weight:600;
+  opacity:0;
+  transform:translateY(12px);
+  pointer-events:none;
+  transition:opacity .2s ease,transform .2s ease;
+}
+[data-theme="dark"] .toast{background:#152234;color:#E2E8F0}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast svg{width:15px;height:15px;color:var(--success);flex-shrink:0}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+@media(max-width:1024px){
+  .hero-content{grid-template-columns:1fr;gap:36px}
+  .metric-panel{max-width:560px}
+  .skills-grid{grid-template-columns:repeat(2, minmax(0, 1fr))}
+}
+@media(max-width:820px){
+  .nav-links{display:none}
+  .cmd-trigger-btn .cmd-label{display:none}
+  .mobile-menu-btn{display:flex}
+}
+@media(max-width:768px){
+  .section{padding:52px 0}
+  .hero{padding:100px 0 52px;min-height:auto}
+  .hero-name{font-size:clamp(2rem,9vw,3rem)}
+  .hero-title{font-size:14px}
+  .hero-contact{flex-direction:column;align-items:flex-start;gap:10px}
+  .hero-links{gap:10px}
+  .projects-grid{grid-template-columns:1fr}
+  .skills-grid,
+  .skills-grid[data-visible-count="2"],
+  .skills-grid[data-visible-count="4"]{grid-template-columns:1fr}
+  .edu-pub-grid{grid-template-columns:1fr;gap:20px}
+  .timeline{padding-left:22px}
+  .timeline-item{padding-left:16px}
+  .timeline-dot{left:-21px}
+  .timeline-date-wrap{margin-left:0;width:100%}
+  .section-title{margin-bottom:24px;font-size:20px}
+  .nav-inner{padding:0 16px}
+  .toast{left:16px;right:16px;bottom:16px}
+}
+@media(max-width:480px){
+  .metric-panel{grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+  .metric-card{padding:14px}
+  .metric-value{font-size:24px}
+  .cmd-trigger-btn{display:none}
+}
+
 /* ============================================
    REDUCED MOTION
    ============================================ */
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .animate-in,.stagger>*{opacity:1;translate:none;animation:none}
-  .hero-badge-dot,.timeline-dot::after{animation:none}
+  .animate-in,.reveal,.reveal-stagger > *{opacity:1;translate:none;transform:none;animation:none;transition:none}
+  .hero-badge-dot,.timeline-dot--active::after{animation:none}
+  .spotlight-card::after,.hero-spotlight{display:none}
   *{transition-duration:.01ms!important}
+}
+
+/* ============================================
+   PRINT STYLESHEET
+   ============================================ */
+@media print{
+  #topnav,#mobile-nav,.modal-backdrop,.toast,.skills-toolbar,.copy-btn,.footer-top-btn,.hero-spotlight,.hero-grid,.metric-jump-icon{display:none!important}
+  body{background:#fff!important;color:#000!important;font-size:12pt}
+  .hero{min-height:auto;padding:16px 0}
+  .section{padding:20px 0;background:#fff!important;border:none!important}
+  .animate-in,.reveal,.reveal-stagger > *{opacity:1!important;transform:none!important;translate:none!important}
+  .metric-card,.timeline-card,.project-card,.skill-group,.edu-item,.pub-card,.summary-content{
+    box-shadow:none!important;
+    background:#fff!important;
+    border-color:#ccc!important;
+    break-inside:avoid;
+  }
+  .skills-grid{grid-template-columns:repeat(3, 1fr)!important}
+  .skill-group.is-hidden{display:block!important}
 }
 </style>
 </head>
 <body>
 
 <!-- ========== NAVBAR ========== -->
-<nav id="topnav">
+<nav id="topnav" aria-label="Primary navigation">
+  <div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
   <div class="nav-inner">
     <a href="#home" class="nav-brand-text" aria-label="Tawhid Sultan — home">
+      <span class="nav-brand-dot" aria-hidden="true"></span>
       tawhid<span class="brand-accent">.dev</span>
     </a>
     <div class="nav-links">
@@ -823,32 +1498,63 @@ a:hover{color:var(--primary-hover)}
       <a href="#skills">Skills</a>
       <a href="#education">Education</a>
     </div>
-    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark and light mode" title="Toggle theme">
-      <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="5"/>
-        <line x1="12" y1="1" x2="12" y2="3"/>
-        <line x1="12" y1="21" x2="12" y2="23"/>
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-        <line x1="1" y1="12" x2="3" y2="12"/>
-        <line x1="21" y1="12" x2="23" y2="12"/>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-      </svg>
-      <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-      </svg>
-    </button>
+    <div class="nav-actions">
+      <button id="cmd-open-btn" class="cmd-trigger-btn" type="button" aria-label="Open command palette" title="Quick jump & actions">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <span class="cmd-label">Search</span>
+        <kbd id="cmd-kbd-hint" class="kbd-hint">Ctrl K</kbd>
+      </button>
+      <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Toggle dark and light mode" title="Toggle theme">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+      <button id="mobile-menu-btn" class="mobile-menu-btn" type="button" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+        <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
   </div>
 </nav>
 
+<div id="mobile-nav" class="mobile-nav" aria-label="Mobile navigation">
+  <a href="#home">Home</a>
+  <a href="#summary">Summary</a>
+  <a href="#experience">Experience</a>
+  <a href="#projects">Projects</a>
+  <a href="#skills">Skills</a>
+  <a href="#education">Education</a>
+  <button id="mobile-cmd-btn" class="mobile-nav-cmd" type="button">
+    <span>Quick Search &amp; Actions</span>
+    <span class="kbd-hint">Ctrl K</span>
+  </button>
+</div>
+
 <!-- ========== HERO ========== -->
 <section id="home" class="hero">
-  <div class="hero-grid"></div>
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div id="hero-spotlight" class="hero-spotlight" aria-hidden="true"></div>
   <div class="hero-content">
     <div class="hero-text">
       <div class="hero-badge animate-in">
-        <span class="hero-badge-dot"></span>
+        <span class="hero-badge-dot" aria-hidden="true"></span>
         Open to opportunities
       </div>
       <h1 class="hero-name animate-in animate-in-d1">
@@ -858,22 +1564,34 @@ a:hover{color:var(--primary-hover)}
 
       <div class="hero-contact animate-in animate-in-d3">
         <span class="hero-contact-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           Dhaka, Bangladesh
         </span>
-        <a href="mailto:tawhidaiub37@gmail.com" class="hero-contact-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-          tawhidaiub37@gmail.com
-        </a>
-        <span class="hero-contact-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          (+88) 01708 919 548
+        <span class="hero-contact-group">
+          <a href="mailto:tawhidaiub37@gmail.com" class="hero-contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            tawhidaiub37@gmail.com
+          </a>
+          <button class="copy-btn" type="button" data-copy="tawhidaiub37@gmail.com" data-copy-label="Email" aria-label="Copy email address" title="Copy email">
+            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </span>
+        <span class="hero-contact-group">
+          <span class="hero-contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            (+88) 01708 919 548
+          </span>
+          <button class="copy-btn" type="button" data-copy="(+88) 01708 919 548" data-copy-label="Phone number" aria-label="Copy phone number" title="Copy phone">
+            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
         </span>
       </div>
 
       <div class="hero-links animate-in animate-in-d4">
-        <button id="view-cv-btn" class="btn btn-primary" aria-label="Preview CV" title="Preview Resume / CV">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px">
+        <button id="view-cv-btn" class="btn btn-primary" type="button" aria-label="Preview CV" title="Preview Resume / CV">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
             <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -883,33 +1601,45 @@ a:hover{color:var(--primary-hover)}
           Preview CV
         </button>
         <a href="https://www.linkedin.com/in/tawhid37/" target="_blank" rel="noopener" class="btn btn-secondary">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
           LinkedIn
         </a>
         <a href="https://github.com/tawhid37" target="_blank" rel="noopener" class="btn btn-secondary">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
           GitHub
         </a>
       </div>
     </div>
 
     <div class="metric-panel animate-in animate-in-d3" aria-label="Career metrics">
-      <div class="metric-card">
-        <div class="metric-value">6<span class="unit">+</span></div>
+      <a href="#experience" class="metric-card spotlight-card">
+        <div class="metric-top">
+          <div class="metric-value"><span class="count-num" data-target="6">6</span><span class="unit">+</span></div>
+          <svg class="metric-jump-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </div>
         <div class="metric-label">Years Experience</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-value">5</div>
+      </a>
+      <a href="#projects" class="metric-card spotlight-card">
+        <div class="metric-top">
+          <div class="metric-value"><span class="count-num" data-target="5">5</span></div>
+          <svg class="metric-jump-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </div>
         <div class="metric-label">Projects</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-value">2</div>
+      </a>
+      <a href="#education" class="metric-card spotlight-card">
+        <div class="metric-top">
+          <div class="metric-value"><span class="count-num" data-target="2">2</span></div>
+          <svg class="metric-jump-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </div>
         <div class="metric-label">Degrees</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-value">1</div>
+      </a>
+      <a href="#publication-card" class="metric-card spotlight-card">
+        <div class="metric-top">
+          <div class="metric-value"><span class="count-num" data-target="1">1</span></div>
+          <svg class="metric-jump-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </div>
         <div class="metric-label">Publication</div>
-      </div>
+      </a>
     </div>
   </div>
 </section>
@@ -917,7 +1647,8 @@ a:hover{color:var(--primary-hover)}
 <!-- ========== SUMMARY ========== -->
 <section id="summary" class="section summary">
   <div class="container">
-    <div class="summary-content animate-in">
+    <h2 class="section-title reveal"><span class="section-index">01</span>Summary</h2>
+    <div class="summary-content spotlight-card reveal">
       <p class="summary-text">
         Software Engineer with 6 years of experience building and scaling backend systems for FinTech and SaaS products. Strong focus on backend development, API design, and CI/CD pipelines, with hands-on experience taking applications from MVP to production. Proven ability to improve system performance and reduce infrastructure costs through database optimization, resolving N+1 query issues, and effective caching strategies. Comfortable fine-tuning frontend layers when needed and collaborating across teams to deliver reliable, data-driven applications.
       </p>
@@ -928,15 +1659,18 @@ a:hover{color:var(--primary-hover)}
 <!-- ========== EXPERIENCE ========== -->
 <section id="experience" class="section">
   <div class="container">
-    <h2 class="section-title animate-in">Experience</h2>
-    <div class="timeline animate-in animate-in-d1">
+    <h2 class="section-title reveal"><span class="section-index">02</span>Experience</h2>
+    <div class="timeline reveal-stagger">
       <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content">
+        <div class="timeline-dot timeline-dot--active" aria-hidden="true"></div>
+        <div class="timeline-card spotlight-card">
           <div class="timeline-header">
             <span class="timeline-company">Tripfindy (Impressive Group)</span>
             <span class="timeline-role">Software Engineer</span>
-            <span class="timeline-date">08/2026 – Present</span>
+            <span class="timeline-date-wrap">
+              <span class="timeline-status-dot" aria-hidden="true"></span>
+              <span class="timeline-date">08/2026 – Present</span>
+            </span>
           </div>
           <ul class="timeline-list">
             <li>Developing backend services, business logic, and API architectures for internal enterprise platforms.</li>
@@ -945,12 +1679,14 @@ a:hover{color:var(--primary-hover)}
         </div>
       </div>
       <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content">
+        <div class="timeline-dot" aria-hidden="true"></div>
+        <div class="timeline-card spotlight-card">
           <div class="timeline-header">
             <span class="timeline-company">Embedded Logic Operations (ELO)</span>
             <span class="timeline-role">Software Engineer</span>
-            <span class="timeline-date">09/2020 – 03/2026</span>
+            <span class="timeline-date-wrap">
+              <span class="timeline-date">09/2020 – 03/2026</span>
+            </span>
           </div>
           <ul class="timeline-list">
             <li>Leading different projects and teams (sizing 3 to 7 members).</li>
@@ -965,9 +1701,9 @@ a:hover{color:var(--primary-hover)}
 <!-- ========== PROJECTS ========== -->
 <section id="projects" class="section">
   <div class="container">
-    <h2 class="section-title animate-in">Projects</h2>
-    <div class="projects-grid stagger animate-in">
-      <div class="project-card">
+    <h2 class="section-title reveal"><span class="section-index">03</span>Projects</h2>
+    <div class="projects-grid reveal-stagger">
+      <div id="project-elobooks" class="project-card spotlight-card">
         <h3 class="project-name">ELOBOOKS</h3>
         <p class="project-type">Cloud-based Inventory Management SaaS</p>
         <ul class="project-list">
@@ -981,7 +1717,7 @@ a:hover{color:var(--primary-hover)}
           <li>Implemented customized RBAC using Cloudsight.</li>
         </ul>
       </div>
-      <div class="project-card">
+      <div id="project-recruitment" class="project-card spotlight-card">
         <h3 class="project-name">Recruitment Platform</h3>
         <p class="project-type">Recruitment Assistance Application</p>
         <ul class="project-list">
@@ -990,7 +1726,7 @@ a:hover{color:var(--primary-hover)}
           <li>Introduced event-driven architecture to manage background processes and the corresponding action.</li>
         </ul>
       </div>
-      <div class="project-card">
+      <div id="project-aero" class="project-card spotlight-card">
         <h3 class="project-name">Aero &amp; Aero B2B</h3>
         <p class="project-type">E-commerce Storefront &amp; Wholesale Portal</p>
         <ul class="project-list">
@@ -999,14 +1735,14 @@ a:hover{color:var(--primary-hover)}
           <li>Designed B2B partner APIs supporting tiered volume pricing, wholesale order approval flows, and real-time inventory tracking.</li>
         </ul>
       </div>
-      <div class="project-card">
+      <div id="project-bagflyers" class="project-card spotlight-card">
         <h3 class="project-name">BagFlyers</h3>
         <p class="project-type">Hand-carry PaaS</p>
         <ul class="project-list">
           <li>Architected and developed RESTful APIs, alongside database design and management.</li>
         </ul>
       </div>
-      <div class="project-card">
+      <div id="project-noorstudy" class="project-card spotlight-card">
         <h3 class="project-name">The NOORSTUDY</h3>
         <p class="project-type">Comprehensive Islamic Education Program</p>
         <ul class="project-list">
@@ -1021,10 +1757,33 @@ a:hover{color:var(--primary-hover)}
 <!-- ========== SKILLS ========== -->
 <section id="skills" class="section skills">
   <div class="container">
-    <h2 class="section-title animate-in">Skills</h2>
-    <div class="skills-grid stagger animate-in">
-      <div class="skill-group">
-        <h3 class="skill-group-title">Languages</h3>
+    <h2 class="section-title reveal"><span class="section-index">04</span>Skills</h2>
+    <div class="skills-toolbar reveal">
+      <div class="skills-tabs" role="tablist" aria-label="Filter skills by category">
+        <button class="skills-tab active" type="button" data-filter="all" aria-pressed="true">All <span class="skills-tab-count">9</span></button>
+        <button class="skills-tab" type="button" data-filter="engineering" aria-pressed="false">Engineering <span class="skills-tab-count">3</span></button>
+        <button class="skills-tab" type="button" data-filter="tools" aria-pressed="false">Tools &amp; Process <span class="skills-tab-count">4</span></button>
+        <button class="skills-tab" type="button" data-filter="soft" aria-pressed="false">Soft &amp; Spoken <span class="skills-tab-count">2</span></button>
+      </div>
+      <div class="skills-search-wrap">
+        <svg class="skills-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="skills-search" class="skills-search" type="search" placeholder="Filter skills..." aria-label="Filter skills by keyword" />
+        <button id="skills-search-clear" class="skills-search-clear" type="button" aria-label="Clear skill filter" title="Clear">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="skills-grid" class="skills-grid reveal-stagger" data-visible-count="9">
+      <div class="skill-group spotlight-card" data-category="engineering">
+        <div class="skill-group-header">
+          <span class="skill-group-icon" title="Programming Languages" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </span>
+          <h3 class="skill-group-title">Languages</h3>
+        </div>
         <div class="skill-badges">
           <span class="skill-badge">JavaScript</span>
           <span class="skill-badge">PHP</span>
@@ -1032,8 +1791,14 @@ a:hover{color:var(--primary-hover)}
           <span class="skill-badge">C++</span>
         </div>
       </div>
-      <div class="skill-group">
-        <h3 class="skill-group-title">Frameworks</h3>
+
+      <div class="skill-group spotlight-card" data-category="engineering">
+        <div class="skill-group-header">
+          <span class="skill-group-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </span>
+          <h3 class="skill-group-title">Frameworks</h3>
+        </div>
         <div class="skill-badges">
           <span class="skill-badge">NestJS</span>
           <span class="skill-badge">ExpressJS</span>
@@ -1043,8 +1808,14 @@ a:hover{color:var(--primary-hover)}
           <span class="skill-badge">Vue.js</span>
         </div>
       </div>
-      <div class="skill-group">
-        <h3 class="skill-group-title">Databases</h3>
+
+      <div class="skill-group spotlight-card" data-category="engineering">
+        <div class="skill-group-header">
+          <span class="skill-group-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          </span>
+          <h3 class="skill-group-title">Databases</h3>
+        </div>
         <div class="skill-badges">
           <span class="skill-badge">MongoDB</span>
           <span class="skill-badge">MySQL</span>
@@ -1053,8 +1824,14 @@ a:hover{color:var(--primary-hover)}
           <span class="skill-badge">Redis</span>
         </div>
       </div>
-      <div class="skill-group">
-        <h3 class="skill-group-title">Dev Tools</h3>
+
+      <div class="skill-group spotlight-card" data-category="tools">
+        <div class="skill-group-header">
+          <span class="skill-group-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          </span>
+          <h3 class="skill-group-title">Dev Tools</h3>
+        </div>
         <div class="skill-badges">
           <span class="skill-badge">Docker</span>
           <span class="skill-badge">Postman</span>
@@ -1063,8 +1840,14 @@ a:hover{color:var(--primary-hover)}
           <span class="skill-badge">Git</span>
         </div>
       </div>
-      <div class="skill-group">
-        <h3 class="skill-group-title">AI Tools</h3>
+
+      <div class="skill-group spotlight-card" data-category="tools">
+        <div class="skill-group-header">
+          <span class="skill-group-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+          </span>
+          <h3 class="skill-group-title">AI Tools</h3>
+        </div>
         <div class="skill-badges">
           <span class="skill-badge">Antigravity</span>
           <span class="skill-badge">Cursor</span>
@@ -1072,8 +1855,43 @@ a:hover{color:var(--primary-hover)}
           <span class="skill-badge">Claude</span>
         </div>
       </div>
-      <div class="skill-group">
-        <h3 class="skill-group-title">Soft Skills</h3>
+
+      <div class="skill-group spotlight-card" data-category="tools">
+        <div class="skill-group-header">
+          <span class="skill-group-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M15 3v12"/></svg>
+          </span>
+          <h3 class="skill-group-title">Project Management</h3>
+        </div>
+        <div class="skill-badges">
+          <span class="skill-badge">ClickUp</span>
+          <span class="skill-badge">Jira</span>
+          <span class="skill-badge">Plane</span>
+          <span class="skill-badge">Linear</span>
+        </div>
+      </div>
+
+      <div class="skill-group spotlight-card" data-category="tools">
+        <div class="skill-group-header">
+          <span class="skill-group-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+          </span>
+          <h3 class="skill-group-title">Methodologies</h3>
+        </div>
+        <div class="skill-badges">
+          <span class="skill-badge">Agile</span>
+          <span class="skill-badge">Waterfall</span>
+          <span class="skill-badge">TDD</span>
+        </div>
+      </div>
+
+      <div class="skill-group spotlight-card" data-category="soft">
+        <div class="skill-group-header">
+          <span class="skill-group-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span>
+          <h3 class="skill-group-title">Soft Skills</h3>
+        </div>
         <div class="skill-badges">
           <span class="skill-badge">Team Work</span>
           <span class="skill-badge">Communication</span>
@@ -1084,25 +1902,14 @@ a:hover{color:var(--primary-hover)}
           <span class="skill-badge">Data-Driven Decision Making</span>
         </div>
       </div>
-      <div class="skill-group">
-        <h3 class="skill-group-title">Project Management</h3>
-        <div class="skill-badges">
-          <span class="skill-badge">ClickUp</span>
-          <span class="skill-badge">Jira</span>
-          <span class="skill-badge">Plane</span>
-          <span class="skill-badge">Linear</span>
+
+      <div class="skill-group spotlight-card" data-category="soft">
+        <div class="skill-group-header">
+          <span class="skill-group-icon" title="Spoken Languages" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </span>
+          <h3 class="skill-group-title">Languages</h3>
         </div>
-      </div>
-      <div class="skill-group">
-        <h3 class="skill-group-title">Methodologies</h3>
-        <div class="skill-badges">
-          <span class="skill-badge">Agile</span>
-          <span class="skill-badge">Waterfall</span>
-          <span class="skill-badge">TDD</span>
-        </div>
-      </div>
-      <div class="skill-group">
-        <h3 class="skill-group-title">Languages</h3>
         <div class="skill-badges">
           <span class="skill-badge">English</span>
           <span class="skill-badge">Bengali</span>
@@ -1110,31 +1917,45 @@ a:hover{color:var(--primary-hover)}
         </div>
       </div>
     </div>
+
+    <div id="skills-empty" class="skills-empty" role="status">
+      <p>No skills match your current filter.</p>
+      <button id="skills-reset-btn" class="btn btn-secondary" type="button">Reset filter</button>
+    </div>
   </div>
 </section>
 
 <!-- ========== EDUCATION & PUBLICATIONS ========== -->
 <section id="education" class="section">
   <div class="container">
-    <h2 class="section-title animate-in">Education &amp; Publications</h2>
-    <div class="edu-pub-grid animate-in animate-in-d1">
+    <h2 class="section-title reveal"><span class="section-index">05</span>Education &amp; Publications</h2>
+    <div class="edu-pub-grid reveal-stagger">
       <div class="edu-column">
-        <div class="edu-item">
+        <div class="edu-item spotlight-card">
           <h3 class="edu-degree">M.Sc in Computer Science</h3>
           <p class="edu-institution">American International University-Bangladesh (AIUB)</p>
           <span class="edu-date">05/2024 – 10/2025</span>
         </div>
-        <div class="edu-item">
+        <div class="edu-item spotlight-card">
           <h3 class="edu-degree">B.Sc in Computer Science &amp; Engineering</h3>
           <p class="edu-institution">American International University-Bangladesh (AIUB)</p>
           <span class="edu-date">05/2016 – 12/2020</span>
         </div>
       </div>
       <div class="pub-column">
-        <div class="pub-card">
+        <div id="publication-card" class="pub-card spotlight-card">
           <p class="pub-card-label">Publication</p>
           <h3 class="pub-card-title">A Microclimate based Crop Recommender System for Precision Agriculture</h3>
-          <span class="pub-card-doi">DOI: 10.5120/ijca2021921309</span>
+          <div class="pub-doi-row">
+            <a href="https://doi.org/10.5120/ijca2021921309" target="_blank" rel="noopener" class="pub-card-doi">
+              DOI: 10.5120/ijca2021921309
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+            <button class="copy-btn" type="button" data-copy="10.5120/ijca2021921309" data-copy-label="DOI" aria-label="Copy publication DOI" title="Copy DOI">
+              <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+          </div>
           <p class="pub-card-desc">
             Proposes a microclimate-based crop recommender for precision agriculture that combines IoT sensors and machine learning to guide farmers toward the best crop for their local conditions. Real-time temperature, humidity, and rainfall are collected via an Arduino-based device and sent to a cloud server, where trained regression models use historical Bangladesh crop and weather data to predict expected production. The results are delivered through a Django web app, aiming to reduce crop-selection risk, save time and cost, and make data-driven farming decisions more practical in real-world settings.
           </p>
@@ -1152,6 +1973,7 @@ a:hover{color:var(--primary-hover)}
       <a href="mailto:tawhidaiub37@gmail.com">Email</a>
       <a href="https://www.linkedin.com/in/tawhid37/" target="_blank" rel="noopener">LinkedIn</a>
       <a href="https://github.com/tawhid37" target="_blank" rel="noopener">GitHub</a>
+      <button id="back-to-top" class="footer-top-btn" type="button" aria-label="Back to top">↑ Top</button>
     </div>
   </div>
 </footer>
@@ -1161,7 +1983,7 @@ a:hover{color:var(--primary-hover)}
   <div class="modal-card">
     <div class="modal-header">
       <h3 id="cv-modal-title" class="modal-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;color:var(--primary)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;color:var(--primary)" aria-hidden="true">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
           <polyline points="14 2 14 8 20 8"></polyline>
         </svg>
@@ -1169,7 +1991,7 @@ a:hover{color:var(--primary-hover)}
       </h3>
       <div class="modal-actions">
         <a href="./Tawhid_Sultan_CV.pdf" download="Md_Tawhid_Sultan_CV.pdf" class="btn btn-primary btn-sm" aria-label="Download CV PDF">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px" aria-hidden="true">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="7 10 12 15 17 10"/>
             <line x1="12" y1="15" x2="12" y2="3"/>
@@ -1177,14 +1999,14 @@ a:hover{color:var(--primary-hover)}
           Download PDF
         </a>
         <a href="./Tawhid_Sultan_CV.pdf" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" aria-label="Open in new tab" title="Open in new tab">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px" aria-hidden="true">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
             <polyline points="15 3 21 3 21 9"></polyline>
             <line x1="10" y1="14" x2="21" y2="3"></line>
           </svg>
         </a>
-        <button id="cv-modal-close" class="modal-close-btn" aria-label="Close modal" title="Close (Esc)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px">
+        <button id="cv-modal-close" class="modal-close-btn" type="button" aria-label="Close modal" title="Close (Esc)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -1197,78 +2019,572 @@ a:hover{color:var(--primary-hover)}
   </div>
 </div>
 
-<script>
-/* Scroll-spy: highlight the active nav section (presentation only) */
-(function(){
-  var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
-  var sections = links
-    .map(function(a){ return document.querySelector(a.getAttribute('href')); })
-    .filter(Boolean);
-  function setActive(){
-    var y = window.scrollY + 120;
-    var atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
-    var current = sections[0];
-    for (var i = 0; i < sections.length; i++){
-      if (sections[i].offsetTop <= y) current = sections[i];
-    }
-    if (atBottom) current = sections[sections.length - 1];
-    links.forEach(function(a){
-      a.classList.toggle('active', current && a.getAttribute('href') === '#' + current.id);
-    });
-  }
-  window.addEventListener('scroll', setActive, { passive: true });
-  window.addEventListener('resize', setActive);
-  setActive();
-})();
+<!-- ========== COMMAND PALETTE MODAL ========== -->
+<div id="cmd-modal" class="modal-backdrop cmd-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="cmd-dialog-label">
+  <div class="cmd-dialog">
+    <div class="cmd-input-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input id="cmd-input" class="cmd-input" type="text" placeholder="Jump to section, project, skill, or run an action..." aria-labelledby="cmd-dialog-label" autocomplete="off" />
+      <span id="cmd-dialog-label" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Command Palette</span>
+      <span class="cmd-esc">Esc</span>
+    </div>
+    <div id="cmd-list" class="cmd-list" role="listbox" aria-label="Commands"></div>
+    <div class="cmd-footer">
+      <span>↑↓ Navigate</span>
+      <span>↵ Execute</span>
+      <span>Esc Close</span>
+    </div>
+  </div>
+</div>
 
-/* Theme toggle handler */
+<!-- ========== TOAST ========== -->
+<div id="toast" class="toast" role="status" aria-live="polite">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-msg">Copied</span>
+</div>
+
+<script>
 (function(){
-  var btn = document.getElementById('theme-toggle');
-  if (!btn) return;
-  btn.addEventListener('click', function(){
+  'use strict';
+
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hoverCapable = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+
+  /* ---------- Toast & Clipboard Helper ---------- */
+  var toastEl = document.getElementById('toast');
+  var toastMsg = document.getElementById('toast-msg');
+  var toastTimer = null;
+
+  function showToast(text) {
+    if (!toastEl || !toastMsg) return;
+    toastMsg.textContent = text;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() { toastEl.classList.remove('show'); }, 2200);
+  }
+
+  function copyText(value, label, btnEl) {
+    function markDone() {
+      showToast(label + ' copied to clipboard');
+      if (btnEl) {
+        btnEl.classList.add('copied');
+        setTimeout(function() { btnEl.classList.remove('copied'); }, 1500);
+      }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(value).then(markDone).catch(function() {
+        fallbackCopy(value, markDone);
+      });
+    } else {
+      fallbackCopy(value, markDone);
+    }
+  }
+
+  function fallbackCopy(value, onDone) {
+    var ta = document.createElement('textarea');
+    ta.value = value;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    onDone();
+  }
+
+  document.querySelectorAll('.copy-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      copyText(btn.getAttribute('data-copy') || '', btn.getAttribute('data-copy-label') || 'Text', btn);
+    });
+  });
+
+  /* ---------- Theme Toggle ---------- */
+  function toggleTheme() {
     var current = document.documentElement.getAttribute('data-theme') || 'light';
     var next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
-    try {
-      localStorage.setItem('theme', next);
-    } catch(e){}
-  });
-})();
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    showToast('Switched to ' + next + ' mode');
+  }
 
-/* CV Preview Modal Handler */
-(function(){
-  var openBtn = document.getElementById('view-cv-btn');
-  var modal = document.getElementById('cv-modal');
-  var closeBtn = document.getElementById('cv-modal-close');
-  var frame = document.getElementById('cv-frame');
-  var cvUrl = './Tawhid_Sultan_CV.pdf';
-  if (!openBtn || !modal || !frame) return;
+  var themeBtn = document.getElementById('theme-toggle');
+  if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
 
-  function openModal(){
-    if (!frame.src || frame.src === 'about:blank' || !frame.src.endsWith('Tawhid_Sultan_CV.pdf')) {
-      frame.src = cvUrl;
+  /* ---------- Platform Shortcut Hint ---------- */
+  var isMac = /Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent || '');
+  var kbdHint = document.getElementById('cmd-kbd-hint');
+  if (kbdHint) kbdHint.textContent = isMac ? '⌘K' : 'Ctrl K';
+
+  /* ---------- Scroll Spy & Progress Bar ---------- */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
+  var mobileNavLinks = Array.prototype.slice.call(document.querySelectorAll('#mobile-nav a'));
+  var allNavLinks = navLinks.concat(mobileNavLinks);
+  var sections = navLinks
+    .map(function(a) { return document.querySelector(a.getAttribute('href')); })
+    .filter(Boolean);
+  var progressEl = document.getElementById('scroll-progress');
+
+  function updateScrollState() {
+    var scrollY = window.scrollY;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    if (progressEl) {
+      var ratio = docHeight > 0 ? Math.min(1, Math.max(0, scrollY / docHeight)) : 0;
+      progressEl.style.transform = 'scaleX(' + ratio.toFixed(4) + ')';
     }
-    modal.classList.add('open');
-    modal.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
+    var y = scrollY + 125;
+    var atBottom = (window.innerHeight + scrollY) >= (document.documentElement.scrollHeight - 4);
+    var current = sections[0];
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].offsetTop <= y) current = sections[i];
+    }
+    if (atBottom && sections.length) current = sections[sections.length - 1];
+    allNavLinks.forEach(function(a) {
+      a.classList.toggle('active', Boolean(current && a.getAttribute('href') === '#' + current.id));
+    });
   }
 
-  function closeModal(){
-    modal.classList.remove('open');
-    modal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+  window.addEventListener('scroll', updateScrollState, { passive: true });
+  window.addEventListener('resize', updateScrollState);
+  updateScrollState();
+
+  var backTopBtn = document.getElementById('back-to-top');
+  if (backTopBtn) {
+    backTopBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
+    });
   }
 
-  openBtn.addEventListener('click', openModal);
-  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  /* ---------- Mobile Navigation Drawer ---------- */
+  var mobileBtn = document.getElementById('mobile-menu-btn');
+  var mobileNav = document.getElementById('mobile-nav');
 
-  modal.addEventListener('click', function(e){
-    if (e.target === modal) closeModal();
+  function setMobileNav(open) {
+    if (!mobileBtn || !mobileNav) return;
+    mobileNav.classList.toggle('open', open);
+    mobileBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  if (mobileBtn && mobileNav) {
+    mobileBtn.addEventListener('click', function() {
+      setMobileNav(!mobileNav.classList.contains('open'));
+    });
+    mobileNavLinks.forEach(function(link) {
+      link.addEventListener('click', function() { setMobileNav(false); });
+    });
+    document.addEventListener('click', function(e) {
+      if (mobileNav.classList.contains('open') && !mobileNav.contains(e.target) && !mobileBtn.contains(e.target)) {
+        setMobileNav(false);
+      }
+    });
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 820 && mobileNav.classList.contains('open')) setMobileNav(false);
+    });
+  }
+
+  /* ---------- Scroll-Triggered Reveals ---------- */
+  var revealNodes = Array.prototype.slice.call(document.querySelectorAll('.reveal, .reveal-stagger'));
+  if (!reducedMotion && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -36px 0px' });
+    revealNodes.forEach(function(el) { io.observe(el); });
+  } else {
+    revealNodes.forEach(function(el) { el.classList.add('is-visible'); });
+  }
+
+  /* ---------- Hero Metric Count-Up ---------- */
+  if (!reducedMotion) {
+    document.querySelectorAll('.count-num').forEach(function(el) {
+      var target = parseInt(el.getAttribute('data-target') || '0', 10);
+      if (!target) return;
+      var duration = 650;
+      var start = performance.now();
+      function step(now) {
+        var progress = Math.min(1, (now - start) / duration);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = String(Math.round(target * eased));
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  /* ---------- Cursor Spotlight (Hero + Cards) ---------- */
+  if (!reducedMotion && hoverCapable) {
+    var heroEl = document.getElementById('home');
+    var heroSpot = document.getElementById('hero-spotlight');
+    if (heroEl && heroSpot) {
+      var heroRaf = 0;
+      heroEl.addEventListener('pointermove', function(e) {
+        if (heroRaf) return;
+        heroRaf = requestAnimationFrame(function() {
+          heroRaf = 0;
+          var rect = heroEl.getBoundingClientRect();
+          heroSpot.style.setProperty('--hx', (e.clientX - rect.left) + 'px');
+          heroSpot.style.setProperty('--hy', (e.clientY - rect.top) + 'px');
+        });
+      }, { passive: true });
+    }
+
+    document.querySelectorAll('.spotlight-card').forEach(function(card) {
+      var cardRaf = 0;
+      card.addEventListener('pointermove', function(e) {
+        if (cardRaf) return;
+        cardRaf = requestAnimationFrame(function() {
+          cardRaf = 0;
+          var rect = card.getBoundingClientRect();
+          card.style.setProperty('--cx', (e.clientX - rect.left) + 'px');
+          card.style.setProperty('--cy', (e.clientY - rect.top) + 'px');
+        });
+      }, { passive: true });
+    });
+  }
+
+  /* ---------- Skills Category Tabs & Keyword Search ---------- */
+  var skillTabs = Array.prototype.slice.call(document.querySelectorAll('.skills-tab'));
+  var skillGroups = Array.prototype.slice.call(document.querySelectorAll('.skill-group'));
+  var skillsGrid = document.getElementById('skills-grid');
+  var skillInput = document.getElementById('skills-search');
+  var skillClearBtn = document.getElementById('skills-search-clear');
+  var skillEmptyEl = document.getElementById('skills-empty');
+  var skillResetBtn = document.getElementById('skills-reset-btn');
+  var activeCategory = 'all';
+
+  function applySkillFilter() {
+    var query = (skillInput ? skillInput.value : '').trim().toLowerCase();
+    if (skillClearBtn) skillClearBtn.classList.toggle('visible', query.length > 0);
+    var visibleCount = 0;
+
+    skillGroups.forEach(function(group) {
+      var catMatch = activeCategory === 'all' || group.getAttribute('data-category') === activeCategory;
+      var badges = Array.prototype.slice.call(group.querySelectorAll('.skill-badge'));
+      var titleText = (group.querySelector('.skill-group-title') || {}).textContent || '';
+      var groupTitleMatch = query && titleText.toLowerCase().indexOf(query) !== -1;
+      var hasBadgeMatch = false;
+
+      badges.forEach(function(badge) {
+        var text = badge.textContent.toLowerCase();
+        var match = query ? (groupTitleMatch || text.indexOf(query) !== -1) : false;
+        if (match) hasBadgeMatch = true;
+        badge.classList.toggle('is-match', Boolean(query && match));
+        badge.classList.toggle('is-dim', Boolean(query && !match));
+      });
+
+      var show = catMatch && (!query || hasBadgeMatch || groupTitleMatch);
+      group.classList.toggle('is-hidden', !show);
+      if (show) visibleCount++;
+    });
+
+    if (skillsGrid) skillsGrid.setAttribute('data-visible-count', String(visibleCount));
+    if (skillEmptyEl) skillEmptyEl.classList.toggle('visible', visibleCount === 0);
+  }
+
+  function setSkillFilter(category, query) {
+    activeCategory = category || 'all';
+    skillTabs.forEach(function(t) {
+      var isAct = t.getAttribute('data-filter') === activeCategory;
+      t.classList.toggle('active', isAct);
+      t.setAttribute('aria-pressed', isAct ? 'true' : 'false');
+    });
+    if (typeof query === 'string' && skillInput) skillInput.value = query;
+    applySkillFilter();
+  }
+
+  skillTabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      setSkillFilter(tab.getAttribute('data-filter') || 'all');
+    });
   });
 
-  window.addEventListener('keydown', function(e){
-    if (e.key === 'Escape' && modal.classList.contains('open')) {
-      closeModal();
+  if (skillInput) skillInput.addEventListener('input', applySkillFilter);
+  if (skillClearBtn) {
+    skillClearBtn.addEventListener('click', function() {
+      if (skillInput) {
+        skillInput.value = '';
+        skillInput.focus();
+      }
+      applySkillFilter();
+    });
+  }
+  if (skillResetBtn) {
+    skillResetBtn.addEventListener('click', function() { setSkillFilter('all', ''); });
+  }
+
+  /* ---------- Accessible Modal Helpers ---------- */
+  function getFocusable(container) {
+    return Array.prototype.slice.call(
+      container.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')
+    ).filter(function(el) { return el.offsetParent !== null; });
+  }
+
+  function trapModalTab(modalEl, e) {
+    if (e.key !== 'Tab') return;
+    var items = getFocusable(modalEl);
+    if (!items.length) return;
+    var first = items[0];
+    var last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
+  /* ---------- CV Preview Modal ---------- */
+  var cvOpenBtn = document.getElementById('view-cv-btn');
+  var cvModal = document.getElementById('cv-modal');
+  var cvCloseBtn = document.getElementById('cv-modal-close');
+  var cvFrame = document.getElementById('cv-frame');
+  var cvUrl = './Tawhid_Sultan_CV.pdf';
+  var cvReturnFocus = null;
+
+  function openCvModal() {
+    if (!cvModal || !cvFrame) return;
+    cvReturnFocus = document.activeElement;
+    if (!cvFrame.src || cvFrame.src === 'about:blank' || !cvFrame.src.endsWith('Tawhid_Sultan_CV.pdf')) {
+      cvFrame.src = cvUrl;
+    }
+    cvModal.classList.add('open');
+    cvModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    if (cvCloseBtn) cvCloseBtn.focus();
+  }
+
+  function closeCvModal() {
+    if (!cvModal) return;
+    cvModal.classList.remove('open');
+    cvModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (cvReturnFocus && typeof cvReturnFocus.focus === 'function') cvReturnFocus.focus();
+  }
+
+  if (cvOpenBtn) cvOpenBtn.addEventListener('click', openCvModal);
+  if (cvCloseBtn) cvCloseBtn.addEventListener('click', closeCvModal);
+  if (cvModal) {
+    cvModal.addEventListener('click', function(e) { if (e.target === cvModal) closeCvModal(); });
+    cvModal.addEventListener('keydown', function(e) { trapModalTab(cvModal, e); });
+  }
+
+  /* ---------- Command Palette (Ctrl+K / Cmd+K) ---------- */
+  var cmdModal = document.getElementById('cmd-modal');
+  var cmdInput = document.getElementById('cmd-input');
+  var cmdList = document.getElementById('cmd-list');
+  var cmdOpenBtn = document.getElementById('cmd-open-btn');
+  var mobileCmdBtn = document.getElementById('mobile-cmd-btn');
+  var cmdReturnFocus = null;
+  var cmdSelectedIdx = 0;
+  var filteredCommands = [];
+
+  function jumpToTarget(selector) {
+    var target = document.querySelector(selector);
+    if (!target) return;
+    target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+    if (target.classList.contains('project-card')) {
+      target.classList.add('is-highlighted');
+      setTimeout(function() { target.classList.remove('is-highlighted'); }, 1800);
+    }
+  }
+
+  var iconSvg = {
+    nav: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>',
+    proj: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+    action: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+    skill: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>'
+  };
+
+  var staticCommands = [
+    { group: 'Navigate', title: 'Home', meta: '#home', icon: 'nav', keywords: 'hero top contact', run: function() { jumpToTarget('#home'); } },
+    { group: 'Navigate', title: 'Summary', meta: '#summary', icon: 'nav', keywords: 'bio overview fintech saas', run: function() { jumpToTarget('#summary'); } },
+    { group: 'Navigate', title: 'Experience', meta: '#experience', icon: 'nav', keywords: 'tripfindy elo work timeline', run: function() { jumpToTarget('#experience'); } },
+    { group: 'Navigate', title: 'Projects', meta: '#projects', icon: 'nav', keywords: 'portfolio systems', run: function() { jumpToTarget('#projects'); } },
+    { group: 'Navigate', title: 'Skills', meta: '#skills', icon: 'nav', keywords: 'stack languages frameworks', run: function() { jumpToTarget('#skills'); } },
+    { group: 'Navigate', title: 'Education & Publications', meta: '#education', icon: 'nav', keywords: 'aiub degree msc bsc paper doi', run: function() { jumpToTarget('#education'); } },
+    { group: 'Projects', title: 'ELOBOOKS', meta: 'Inventory SaaS', icon: 'proj', keywords: 'graphql websocket microservice cloudsight rbac', run: function() { jumpToTarget('#project-elobooks'); } },
+    { group: 'Projects', title: 'Recruitment Platform', meta: 'REST & Event-driven', icon: 'proj', keywords: 'rest job matching', run: function() { jumpToTarget('#project-recruitment'); } },
+    { group: 'Projects', title: 'Aero & Aero B2B', meta: 'NestJS · E-commerce', icon: 'proj', keywords: 'nestjs node bkash cod b2b', run: function() { jumpToTarget('#project-aero'); } },
+    { group: 'Projects', title: 'BagFlyers', meta: 'Hand-carry PaaS', icon: 'proj', keywords: 'rest database', run: function() { jumpToTarget('#project-bagflyers'); } },
+    { group: 'Projects', title: 'The NOORSTUDY', meta: 'Multi-tenant · RBAC', icon: 'proj', keywords: 'admin multi-tenancy education', run: function() { jumpToTarget('#project-noorstudy'); } },
+    { group: 'Actions', title: 'Preview CV (PDF)', meta: 'Modal', icon: 'action', keywords: 'resume pdf view', run: function() { openCvModal(); } },
+    { group: 'Actions', title: 'Download CV (PDF)', meta: 'File', icon: 'action', keywords: 'resume save download', run: function() {
+      var a = document.createElement('a');
+      a.href = './Tawhid_Sultan_CV.pdf';
+      a.download = 'Md_Tawhid_Sultan_CV.pdf';
+      a.click();
+    }},
+    { group: 'Actions', title: 'Toggle Light / Dark Mode', meta: 'Theme', icon: 'action', keywords: 'appearance dark light color', run: function() { toggleTheme(); } },
+    { group: 'Actions', title: 'Copy Email Address', meta: 'tawhidaiub37@gmail.com', icon: 'action', keywords: 'mail contact', run: function() { copyText('tawhidaiub37@gmail.com', 'Email'); } },
+    { group: 'Actions', title: 'Copy Phone Number', meta: '(+88) 01708 919 548', icon: 'action', keywords: 'call telephone contact', run: function() { copyText('(+88) 01708 919 548', 'Phone number'); } },
+    { group: 'Actions', title: 'Copy Publication DOI', meta: '10.5120/ijca2021921309', icon: 'action', keywords: 'paper research citation', run: function() { copyText('10.5120/ijca2021921309', 'DOI'); } },
+    { group: 'Actions', title: 'Open LinkedIn Profile', meta: 'External', icon: 'action', keywords: 'social network', run: function() { window.open('https://www.linkedin.com/in/tawhid37/', '_blank', 'noopener'); } },
+    { group: 'Actions', title: 'Open GitHub Profile', meta: 'External', icon: 'action', keywords: 'code repos', run: function() { window.open('https://github.com/tawhid37', '_blank', 'noopener'); } }
+  ];
+
+  var skillCommands = Array.prototype.slice.call(document.querySelectorAll('.skill-badge')).map(function(badge) {
+    var name = badge.textContent.trim();
+    var groupEl = badge.closest('.skill-group');
+    var groupTitle = groupEl ? groupEl.querySelector('.skill-group-title').textContent.trim() : 'Skills';
+    return {
+      group: 'Skills',
+      title: name,
+      meta: groupTitle,
+      icon: 'skill',
+      keywords: groupTitle.toLowerCase(),
+      run: function() {
+        setSkillFilter('all', name);
+        jumpToTarget('#skills');
+      }
+    };
+  });
+
+  function renderCommands() {
+    if (!cmdList || !cmdInput) return;
+    var q = cmdInput.value.trim().toLowerCase();
+    var pool = q ? staticCommands.concat(skillCommands) : staticCommands;
+    filteredCommands = pool.filter(function(cmd) {
+      if (!q) return true;
+      var hay = (cmd.title + ' ' + cmd.meta + ' ' + (cmd.keywords || '')).toLowerCase();
+      return hay.indexOf(q) !== -1;
+    }).slice(0, 18);
+
+    cmdSelectedIdx = 0;
+    cmdList.innerHTML = '';
+
+    if (!filteredCommands.length) {
+      var empty = document.createElement('div');
+      empty.className = 'cmd-empty';
+      empty.textContent = 'No matching commands or skills.';
+      cmdList.appendChild(empty);
+      return;
+    }
+
+    var lastGroup = '';
+    filteredCommands.forEach(function(cmd, idx) {
+      if (cmd.group !== lastGroup) {
+        lastGroup = cmd.group;
+        var grp = document.createElement('div');
+        grp.className = 'cmd-group-label';
+        grp.textContent = lastGroup;
+        cmdList.appendChild(grp);
+      }
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cmd-item' + (idx === 0 ? ' is-selected' : '');
+      btn.setAttribute('role', 'option');
+      btn.setAttribute('aria-selected', idx === 0 ? 'true' : 'false');
+      btn.setAttribute('data-cmd-index', String(idx));
+
+      var left = document.createElement('span');
+      left.className = 'cmd-item-left';
+      var ico = document.createElement('span');
+      ico.className = 'cmd-item-icon';
+      ico.setAttribute('aria-hidden', 'true');
+      ico.innerHTML = iconSvg[cmd.icon] || iconSvg.nav;
+      var title = document.createElement('span');
+      title.className = 'cmd-item-title';
+      title.textContent = cmd.title;
+      left.appendChild(ico);
+      left.appendChild(title);
+
+      var meta = document.createElement('span');
+      meta.className = 'cmd-item-meta';
+      meta.textContent = cmd.meta;
+
+      btn.appendChild(left);
+      btn.appendChild(meta);
+      btn.addEventListener('click', function() { executeCommand(idx); });
+      btn.addEventListener('mouseenter', function() { setSelectedCommand(idx); });
+      cmdList.appendChild(btn);
+    });
+  }
+
+  function setSelectedCommand(idx) {
+    if (!filteredCommands.length) return;
+    cmdSelectedIdx = (idx + filteredCommands.length) % filteredCommands.length;
+    var items = cmdList.querySelectorAll('.cmd-item');
+    items.forEach(function(item, i) {
+      var active = i === cmdSelectedIdx;
+      item.classList.toggle('is-selected', active);
+      item.setAttribute('aria-selected', active ? 'true' : 'false');
+      if (active) item.scrollIntoView({ block: 'nearest' });
+    });
+  }
+
+  function executeCommand(idx) {
+    var cmd = filteredCommands[idx];
+    if (!cmd) return;
+    closeCmdModal(true);
+    cmd.run();
+  }
+
+  function openCmdModal() {
+    if (!cmdModal || !cmdInput) return;
+    setMobileNav(false);
+    cmdReturnFocus = document.activeElement;
+    cmdInput.value = '';
+    renderCommands();
+    cmdModal.classList.add('open');
+    cmdModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    cmdInput.focus();
+  }
+
+  function closeCmdModal(skipRestore) {
+    if (!cmdModal) return;
+    cmdModal.classList.remove('open');
+    cmdModal.setAttribute('aria-hidden', 'true');
+    if (!cvModal || !cvModal.classList.contains('open')) document.body.style.overflow = '';
+    if (!skipRestore && cmdReturnFocus && typeof cmdReturnFocus.focus === 'function') cmdReturnFocus.focus();
+  }
+
+  if (cmdOpenBtn) cmdOpenBtn.addEventListener('click', openCmdModal);
+  if (mobileCmdBtn) mobileCmdBtn.addEventListener('click', openCmdModal);
+  if (cmdInput) cmdInput.addEventListener('input', renderCommands);
+  if (cmdModal) {
+    cmdModal.addEventListener('click', function(e) { if (e.target === cmdModal) closeCmdModal(false); });
+    cmdModal.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedCommand(cmdSelectedIdx + 1);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedCommand(cmdSelectedIdx - 1);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        executeCommand(cmdSelectedIdx);
+      } else {
+        trapModalTab(cmdModal, e);
+      }
+    });
+  }
+
+  /* ---------- Global Keyboard Shortcuts ---------- */
+  window.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      if (cmdModal && cmdModal.classList.contains('open')) {
+        closeCmdModal(false);
+      } else {
+        openCmdModal();
+      }
+      return;
+    }
+    if (e.key === 'Escape') {
+      if (cmdModal && cmdModal.classList.contains('open')) {
+        closeCmdModal(false);
+      } else if (cvModal && cvModal.classList.contains('open')) {
+        closeCvModal();
+      } else if (mobileNav && mobileNav.classList.contains('open')) {
+        setMobileNav(false);
+      }
     }
   });
 })();
