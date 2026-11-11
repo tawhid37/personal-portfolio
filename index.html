@@ -62,6 +62,13 @@
   --badge-text:#545963;
   --kbd-bg:rgba(255,255,255,.12);
   --kbd-border:rgba(255,255,255,.22);
+  --json-bg:#0F172A;
+  --json-surface:#162033;
+  --json-border:#26344D;
+  --json-key:#7DD3FC;
+  --json-string:#86EFAC;
+  --json-number:#FDE047;
+  --json-punct:#94A3B8;
   --radius:4px;
   --radius-card:10px;
   --radius-lg:14px;
@@ -101,7 +108,23 @@
   --badge-text:#A5B4C7;
   --kbd-bg:rgba(148,163,184,.12);
   --kbd-border:rgba(148,163,184,.25);
+  --json-bg:#080F18;
+  --json-surface:#0E1826;
+  --json-border:#1E2E44;
+  --json-key:#38BDF8;
+  --json-string:#6EE7B7;
+  --json-number:#FBBF24;
+  --json-punct:#64748B;
 }
+
+/* View Transitions API ripple */
+::view-transition-old(root),
+::view-transition-new(root){
+  animation:none;
+  mix-blend-mode:normal;
+}
+::view-transition-new(root){z-index:9999}
+
 html{scroll-behavior:smooth}
 body{
   font-family:var(--font-body);
@@ -122,9 +145,10 @@ h1,h2,h3,h4{font-family:var(--font-heading);font-weight:700;line-height:1.15;col
 a{color:var(--primary);text-decoration:none;transition:color .2s}
 a:hover{color:var(--primary-hover)}
 :focus-visible{outline:1px solid var(--primary);outline-offset:2px;box-shadow:var(--focus-ring)}
+[hidden]{display:none!important}
 
 /* ============================================
-   NAVBAR — Translucent + Progress + Mobile Drawer
+   NAVBAR — Translucent + Progress + View Switch
    ============================================ */
 #topnav{
   position:fixed;
@@ -156,7 +180,7 @@ a:hover{color:var(--primary-hover)}
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:16px;
+  gap:14px;
 }
 .nav-brand-text{
   font-family:var(--font-code);
@@ -189,7 +213,7 @@ a:hover{color:var(--primary-hover)}
   height:58px;
   display:flex;
   align-items:center;
-  padding:0 13px;
+  padding:0 12px;
   font-size:13.5px;
   font-weight:600;
   color:rgba(255,255,255,.76);
@@ -201,6 +225,37 @@ a:hover{color:var(--primary-hover)}
 .nav-links a.active{color:#fff;border-bottom-color:var(--primary)}
 
 .nav-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+/* UI | JSON segmented switch */
+.view-switch{
+  display:inline-flex;
+  align-items:center;
+  height:34px;
+  padding:3px;
+  border-radius:6px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);
+  gap:2px;
+}
+.view-switch-btn{
+  height:26px;
+  padding:0 9px;
+  border:none;
+  border-radius:4px;
+  background:transparent;
+  color:rgba(255,255,255,.75);
+  font-family:var(--font-code);
+  font-size:11.5px;
+  font-weight:600;
+  cursor:pointer;
+  transition:background .16s,color .16s;
+}
+.view-switch-btn:hover{color:#fff}
+.view-switch-btn.active{
+  background:var(--primary);
+  color:#fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.25);
+}
 
 .cmd-trigger-btn{
   height:34px;
@@ -236,7 +291,7 @@ a:hover{color:var(--primary-hover)}
   line-height:1.2;
 }
 
-.theme-toggle-btn,.mobile-menu-btn{
+.nav-icon-btn{
   width:34px;
   height:34px;
   border-radius:6px;
@@ -250,13 +305,16 @@ a:hover{color:var(--primary-hover)}
   flex-shrink:0;
   transition:background .2s,border-color .2s,transform .15s;
   padding:0;
+  font-family:var(--font-code);
+  font-size:13px;
+  font-weight:700;
 }
-.theme-toggle-btn:hover,.mobile-menu-btn:hover{
+.nav-icon-btn:hover{
   background:rgba(255,255,255,.14);
   border-color:rgba(255,255,255,.38);
 }
-.theme-toggle-btn:active,.mobile-menu-btn:active{transform:scale(.94)}
-.theme-toggle-btn svg,.mobile-menu-btn svg{width:17px;height:17px}
+.nav-icon-btn:active{transform:scale(.94)}
+.nav-icon-btn svg{width:17px;height:17px}
 [data-theme="light"] .moon-icon{display:block}
 [data-theme="light"] .sun-icon{display:none}
 [data-theme="dark"] .moon-icon{display:none}
@@ -303,8 +361,13 @@ a:hover{color:var(--primary-hover)}
   color:#fff;
   border-left:3px solid var(--primary);
 }
-.mobile-nav-cmd{
+.mobile-nav-actions{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px;
   margin-top:8px;
+}
+.mobile-nav-cmd{
   padding:10px 12px;
   border-radius:6px;
   background:rgba(255,255,255,.08);
@@ -317,6 +380,66 @@ a:hover{color:var(--primary-hover)}
   font-size:13px;
   font-weight:600;
   cursor:pointer;
+}
+
+/* ============================================
+   FLOATING RIGHT-EDGE SECTION RAIL (WIDE DESKTOP)
+   ============================================ */
+.section-rail{
+  position:fixed;
+  right:20px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:80;
+  display:none;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+}
+@media(min-width:1360px){
+  .section-rail{display:flex}
+}
+.rail-link{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:3px 0;
+  color:var(--text-secondary);
+  text-decoration:none;
+  font-family:var(--font-code);
+  font-size:11px;
+  font-weight:600;
+}
+.rail-label{
+  opacity:0;
+  transform:translateX(6px);
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  padding:2px 8px;
+  border-radius:4px;
+  box-shadow:var(--shadow-1);
+  color:var(--text-primary);
+  pointer-events:none;
+  transition:opacity .16s,transform .16s;
+  white-space:nowrap;
+}
+.rail-link:hover .rail-label,
+.rail-link:focus-visible .rail-label{
+  opacity:1;
+  transform:translateX(0);
+}
+.rail-tick{
+  width:14px;
+  height:3px;
+  border-radius:999px;
+  background:var(--border-strong);
+  transition:width .2s,background .2s,box-shadow .2s;
+}
+.rail-link:hover .rail-tick{width:20px;background:var(--primary)}
+.rail-link.active .rail-tick{
+  width:26px;
+  background:var(--primary);
+  box-shadow:0 0 8px var(--spotlight-border);
 }
 
 /* ============================================
@@ -377,7 +500,7 @@ a:hover{color:var(--primary-hover)}
 .spotlight-card:hover::after{opacity:1}
 
 /* ============================================
-   HERO — SYSTEMS ARCHITECTURE HEADER
+   HERO — SYSTEMS ARCHITECTURE HEADER & CANVAS
    ============================================ */
 .hero{
   position:relative;
@@ -398,6 +521,15 @@ a:hover{color:var(--primary-hover)}
   mask-image:radial-gradient(ellipse 85% 80% at 50% 45%, black 35%, transparent 78%);
   -webkit-mask-image:radial-gradient(ellipse 85% 80% at 50% 45%, black 35%, transparent 78%);
   pointer-events:none;
+}
+.hero-canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  mask-image:radial-gradient(ellipse 85% 80% at 50% 45%, black 30%, transparent 82%);
+  -webkit-mask-image:radial-gradient(ellipse 85% 80% at 50% 45%, black 30%, transparent 82%);
 }
 .hero-spotlight{
   position:absolute;
@@ -640,7 +772,7 @@ a.hero-contact-item:hover{color:var(--primary)}
 }
 
 /* ============================================
-   EXPERIENCE / TIMELINE CARDS
+   EXPERIENCE / TIMELINE CARDS + TENURE
    ============================================ */
 .timeline{position:relative;padding-left:28px}
 .timeline::before{
@@ -700,7 +832,7 @@ a.hero-contact-item:hover{color:var(--primary)}
   display:flex;
   flex-wrap:wrap;
   align-items:center;
-  gap:8px 14px;
+  gap:8px 12px;
   margin-bottom:14px;
 }
 .timeline-company{font-weight:700;font-size:17px;color:var(--text-primary)}
@@ -716,6 +848,7 @@ a.hero-contact-item:hover{color:var(--primary)}
   margin-left:auto;
   display:inline-flex;
   align-items:center;
+  flex-wrap:wrap;
   gap:8px;
 }
 .timeline-status-dot{
@@ -730,6 +863,17 @@ a.hero-contact-item:hover{color:var(--primary)}
   font-weight:600;
   white-space:nowrap;
   font-family:var(--font-code);
+}
+.timeline-tenure{
+  font-family:var(--font-code);
+  font-size:11px;
+  font-weight:600;
+  color:var(--text-secondary);
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:2px 8px;
+  border-radius:999px;
+  white-space:nowrap;
 }
 .timeline-list{list-style:none;display:flex;flex-direction:column;gap:8px}
 .timeline-list li{
@@ -748,7 +892,7 @@ a.hero-contact-item:hover{color:var(--primary)}
 }
 
 /* ============================================
-   PROJECTS (structure preserved, elevated cards)
+   PROJECTS — INSPECTABLE CARDS
    ============================================ */
 .projects-grid{
   display:grid;
@@ -762,6 +906,7 @@ a.hero-contact-item:hover{color:var(--primary)}
   padding:24px;
   transition:box-shadow .22s,transform .22s,border-color .22s;
   scroll-margin-top:5.5rem;
+  cursor:pointer;
 }
 .project-card::before{
   content:'';
@@ -773,18 +918,47 @@ a.hero-contact-item:hover{color:var(--primary)}
   transition:opacity .2s;
   z-index:2;
 }
-.project-card:hover{
+.project-card:hover,.project-card:focus-visible{
   border-color:var(--spotlight-border);
   box-shadow:var(--shadow-2);
   transform:translateY(-2px);
 }
-.project-card:hover::before{opacity:1}
+.project-card:hover::before,.project-card:focus-visible::before{opacity:1}
 .project-card.is-highlighted{
   border-color:var(--primary);
   box-shadow:0 0 0 3px var(--primary-tint), var(--shadow-2);
 }
 .project-card.is-highlighted::before{opacity:1}
+.project-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
 .project-name{font-weight:700;font-size:20px;margin-bottom:8px}
+.project-inspect-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-family:var(--font-code);
+  font-size:11px;
+  font-weight:600;
+  color:var(--primary);
+  background:var(--primary-tint);
+  border:1px solid transparent;
+  padding:3px 8px;
+  border-radius:5px;
+  opacity:.72;
+  white-space:nowrap;
+  transition:opacity .18s,border-color .18s,transform .18s;
+  flex-shrink:0;
+}
+.project-card:hover .project-inspect-pill,
+.project-card:focus-visible .project-inspect-pill{
+  opacity:1;
+  border-color:var(--spotlight-border);
+  transform:translate(1px,-1px);
+}
 .project-type{
   display:inline-block;
   background:var(--primary-tint);
@@ -1086,6 +1260,124 @@ a.hero-contact-item:hover{color:var(--primary)}
 .pub-card-desc{font-size:13.5px;color:var(--text-secondary);line-height:1.68}
 
 /* ============================================
+   JSON LIVE SCHEMA VIEW
+   ============================================ */
+.json-view{
+  padding:88px 0 64px;
+  min-height:100vh;
+  background:var(--bg);
+}
+.json-shell{
+  border:1px solid var(--json-border);
+  border-radius:var(--radius-lg);
+  background:var(--json-bg);
+  box-shadow:var(--shadow-2);
+  overflow:hidden;
+  color:#E2E8F0;
+}
+.json-toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 16px;
+  background:var(--json-surface);
+  border-bottom:1px solid var(--json-border);
+}
+.json-meta{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:var(--font-code);
+  font-size:12.5px;
+  font-weight:600;
+}
+.json-file-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:#fff;
+}
+.json-file-dot{
+  width:8px;height:8px;
+  border-radius:9999px;
+  background:#10B981;
+}
+.json-stats{
+  color:#94A3B8;
+  font-size:11.5px;
+  font-weight:400;
+}
+.json-actions{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+}
+.json-btn{
+  height:30px;
+  padding:0 10px;
+  border-radius:5px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.14);
+  color:#E2E8F0;
+  font-family:var(--font-code);
+  font-size:11.5px;
+  font-weight:600;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  transition:background .15s,border-color .15s,color .15s;
+}
+.json-btn:hover{background:rgba(56,189,248,.16);border-color:#38BDF8;color:#fff}
+.json-btn-primary{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:#fff;
+}
+.json-btn-primary:hover{background:var(--primary-hover)}
+.json-tree{
+  padding:18px 20px;
+  font-family:var(--font-code);
+  font-size:13px;
+  line-height:1.65;
+  overflow-x:auto;
+}
+.json-node-line{
+  display:flex;
+  align-items:flex-start;
+  gap:4px;
+}
+.json-toggle{
+  background:transparent;
+  border:none;
+  color:var(--json-punct);
+  width:18px;
+  height:20px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-family:var(--font-code);
+  font-size:11px;
+  flex-shrink:0;
+  border-radius:3px;
+  margin-left:-18px;
+}
+.json-toggle:hover{color:#fff;background:rgba(255,255,255,.08)}
+.json-children{padding-left:22px;border-left:1px dashed rgba(148,163,184,.18);margin-left:7px}
+.json-branch.is-collapsed > .json-children,
+.json-branch.is-collapsed > .json-close-line{display:none}
+.json-collapsed-preview{display:none;color:var(--json-punct);font-style:italic;margin:0 4px}
+.json-branch.is-collapsed > .json-node-line .json-collapsed-preview{display:inline}
+.json-key{color:var(--json-key)}
+.json-str{color:var(--json-string)}
+.json-num{color:var(--json-number)}
+.json-punct{color:var(--json-punct)}
+
+/* ============================================
    FOOTER
    ============================================ */
 .footer{
@@ -1105,10 +1397,10 @@ a.hero-contact-item:hover{color:var(--primary)}
   gap:16px;
 }
 .footer-name{font-weight:600;font-size:14px;color:var(--text-primary)}
-.footer-links{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.footer-links{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
 .footer-links a{color:var(--text-secondary);font-size:13px;font-weight:600}
 .footer-links a:hover{color:var(--primary)}
-.footer-top-btn{
+.footer-util-btn{
   display:inline-flex;
   align-items:center;
   gap:4px;
@@ -1124,7 +1416,7 @@ a.hero-contact-item:hover{color:var(--primary)}
   cursor:pointer;
   transition:border-color .15s,color .15s;
 }
-.footer-top-btn:hover{border-color:var(--primary);color:var(--primary)}
+.footer-util-btn:hover{border-color:var(--primary);color:var(--primary)}
 
 /* ============================================
    SCROLL & INITIAL REVEAL ANIMATIONS
@@ -1171,7 +1463,7 @@ a.hero-contact-item:hover{color:var(--primary)}
 .reveal-stagger.is-visible > *:nth-child(9){transition-delay:.43s}
 
 /* ============================================
-   MODALS (CV PREVIEW & COMMAND PALETTE)
+   MODALS & SLIDE-OVER DRAWERS
    ============================================ */
 .btn-sm{height:32px;padding:0 12px;font-size:12px;gap:6px}
 .modal-backdrop{
@@ -1201,6 +1493,16 @@ a.hero-contact-item:hover{color:var(--primary)}
   box-shadow:var(--shadow-2);
   overflow:hidden;
   animation:scaleUp .22s cubic-bezier(.25,.46,.45,.94);
+  transition:width .2s ease,height .2s ease,border-radius .2s ease;
+}
+.modal-backdrop.is-fullscreen{padding:0}
+.modal-card.is-fullscreen{
+  max-width:none;
+  max-height:none;
+  width:100vw;
+  height:100vh;
+  border-radius:0;
+  border:none;
 }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes scaleUp{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
@@ -1244,6 +1546,7 @@ a.hero-contact-item:hover{color:var(--primary)}
   color:var(--text-primary);
   border-color:var(--text-primary);
 }
+.modal-close-btn svg{width:15px;height:15px}
 .modal-body{
   flex:1;
   position:relative;
@@ -1255,6 +1558,98 @@ a.hero-contact-item:hover{color:var(--primary)}
   height:100%;
   border:none;
   display:block;
+}
+#cv-fullscreen-btn .compress-icon{display:none}
+#cv-fullscreen-btn[aria-pressed="true"] .expand-icon{display:none}
+#cv-fullscreen-btn[aria-pressed="true"] .compress-icon{display:block}
+
+/* Project Inspector Slide-Over Drawer */
+.drawer-backdrop{
+  justify-content:flex-end;
+  align-items:stretch;
+  padding:0;
+}
+.drawer-panel{
+  width:min(560px, 100vw);
+  height:100%;
+  background:var(--card-bg);
+  border-left:1px solid var(--border);
+  box-shadow:-12px 0 40px rgba(0,0,0,.28);
+  display:flex;
+  flex-direction:column;
+  animation:slideInRight .24s cubic-bezier(.22,1,.36,1);
+}
+@keyframes slideInRight{
+  from{transform:translateX(28px);opacity:.4}
+  to{transform:translateX(0);opacity:1}
+}
+.drawer-header{
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.drawer-kicker{
+  font-family:var(--font-code);
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--primary);
+}
+.drawer-body{
+  flex:1;
+  overflow-y:auto;
+  padding:24px;
+}
+.drawer-title{
+  font-size:26px;
+  font-weight:800;
+  margin-bottom:10px;
+  line-height:1.15;
+}
+.drawer-list{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:20px;
+}
+.drawer-list li{
+  padding:14px 16px 14px 36px;
+  border-radius:8px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  position:relative;
+  font-size:14.5px;
+  line-height:1.65;
+  color:var(--text-primary);
+}
+.drawer-list li::before{
+  content:attr(data-step);
+  position:absolute;
+  left:12px;
+  top:15px;
+  font-family:var(--font-code);
+  font-size:11.5px;
+  font-weight:700;
+  color:var(--primary);
+}
+.drawer-footer{
+  padding:14px 20px;
+  border-top:1px solid var(--border);
+  background:var(--surface);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.drawer-counter{
+  font-family:var(--font-code);
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-secondary);
 }
 
 /* Command Palette */
@@ -1381,6 +1776,45 @@ a.hero-contact-item:hover{color:var(--primary)}
   font-family:var(--font-code);
 }
 
+/* Shortcuts Cheat-Sheet Modal */
+.shortcuts-dialog{
+  width:100%;
+  max-width:460px;
+  background:var(--card-bg);
+  border:1px solid var(--border-strong);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-2);
+  overflow:hidden;
+  animation:scaleUp .18s cubic-bezier(.22,1,.36,1);
+}
+.shortcuts-body{
+  padding:16px 20px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.shortcut-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:8px 0;
+  border-bottom:1px solid var(--border);
+  font-size:13.5px;
+}
+.shortcut-row:last-child{border-bottom:none}
+.shortcut-keys{display:inline-flex;align-items:center;gap:4px}
+.shortcut-key{
+  font-family:var(--font-code);
+  font-size:11.5px;
+  font-weight:600;
+  padding:3px 7px;
+  border-radius:5px;
+  background:var(--surface);
+  border:1px solid var(--border-strong);
+  color:var(--text-primary);
+}
+
 /* ============================================
    TOAST NOTIFICATION
    ============================================ */
@@ -1417,7 +1851,7 @@ a.hero-contact-item:hover{color:var(--primary)}
   .metric-panel{max-width:560px}
   .skills-grid{grid-template-columns:repeat(2, minmax(0, 1fr))}
 }
-@media(max-width:820px){
+@media(max-width:860px){
   .nav-links{display:none}
   .cmd-trigger-btn .cmd-label{display:none}
   .mobile-menu-btn{display:flex}
@@ -1442,11 +1876,22 @@ a.hero-contact-item:hover{color:var(--primary)}
   .nav-inner{padding:0 16px}
   .toast{left:16px;right:16px;bottom:16px}
 }
+@media(max-width:640px){
+  .drawer-backdrop{align-items:flex-end}
+  .drawer-panel{
+    width:100vw;
+    height:86vh;
+    border-left:none;
+    border-top:1px solid var(--border);
+    border-radius:16px 16px 0 0;
+  }
+}
 @media(max-width:480px){
   .metric-panel{grid-template-columns:1fr 1fr;gap:8px;padding:10px}
   .metric-card{padding:14px}
   .metric-value{font-size:24px}
-  .cmd-trigger-btn{display:none}
+  .cmd-trigger-btn,#shortcuts-open-btn{display:none}
+  .nav-inner{gap:8px}
 }
 
 /* ============================================
@@ -1456,7 +1901,7 @@ a.hero-contact-item:hover{color:var(--primary)}
   html{scroll-behavior:auto}
   .animate-in,.reveal,.reveal-stagger > *{opacity:1;translate:none;transform:none;animation:none;transition:none}
   .hero-badge-dot,.timeline-dot--active::after{animation:none}
-  .spotlight-card::after,.hero-spotlight{display:none}
+  .spotlight-card::after,.hero-spotlight,.hero-canvas{display:none}
   *{transition-duration:.01ms!important}
 }
 
@@ -1464,7 +1909,7 @@ a.hero-contact-item:hover{color:var(--primary)}
    PRINT STYLESHEET
    ============================================ */
 @media print{
-  #topnav,#mobile-nav,.modal-backdrop,.toast,.skills-toolbar,.copy-btn,.footer-top-btn,.hero-spotlight,.hero-grid,.metric-jump-icon{display:none!important}
+  #topnav,#mobile-nav,.section-rail,.modal-backdrop,.toast,.skills-toolbar,.copy-btn,.footer-util-btn,.hero-spotlight,.hero-grid,.hero-canvas,.metric-jump-icon,.project-inspect-pill{display:none!important}
   body{background:#fff!important;color:#000!important;font-size:12pt}
   .hero{min-height:auto;padding:16px 0}
   .section{padding:20px 0;background:#fff!important;border:none!important}
@@ -1480,7 +1925,7 @@ a.hero-contact-item:hover{color:var(--primary)}
 }
 </style>
 </head>
-<body>
+<body data-view="ui">
 
 <!-- ========== NAVBAR ========== -->
 <nav id="topnav" aria-label="Primary navigation">
@@ -1499,14 +1944,19 @@ a.hero-contact-item:hover{color:var(--primary)}
       <a href="#education">Education</a>
     </div>
     <div class="nav-actions">
-      <button id="cmd-open-btn" class="cmd-trigger-btn" type="button" aria-label="Open command palette" title="Quick jump & actions">
+      <div class="view-switch" role="group" aria-label="Portfolio view mode">
+        <button id="view-ui-btn" class="view-switch-btn active" type="button" data-view-target="ui" aria-pressed="true">UI</button>
+        <button id="view-json-btn" class="view-switch-btn" type="button" data-view-target="json" aria-pressed="false">JSON</button>
+      </div>
+      <button id="cmd-open-btn" class="cmd-trigger-btn" type="button" aria-label="Open command palette" title="Quick jump &amp; actions">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
         <span class="cmd-label">Search</span>
         <kbd id="cmd-kbd-hint" class="kbd-hint">Ctrl K</kbd>
       </button>
-      <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Toggle dark and light mode" title="Toggle theme">
+      <button id="shortcuts-open-btn" class="nav-icon-btn" type="button" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">?</button>
+      <button id="theme-toggle" class="nav-icon-btn theme-toggle-btn" type="button" aria-label="Toggle dark and light mode" title="Toggle theme (T)">
         <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="5"/>
           <line x1="12" y1="1" x2="12" y2="3"/>
@@ -1522,7 +1972,7 @@ a.hero-contact-item:hover{color:var(--primary)}
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
       </button>
-      <button id="mobile-menu-btn" class="mobile-menu-btn" type="button" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-nav">
+      <button id="mobile-menu-btn" class="nav-icon-btn mobile-menu-btn" type="button" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-nav">
         <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
@@ -1541,15 +1991,30 @@ a.hero-contact-item:hover{color:var(--primary)}
   <a href="#projects">Projects</a>
   <a href="#skills">Skills</a>
   <a href="#education">Education</a>
-  <button id="mobile-cmd-btn" class="mobile-nav-cmd" type="button">
-    <span>Quick Search &amp; Actions</span>
-    <span class="kbd-hint">Ctrl K</span>
-  </button>
+  <div class="mobile-nav-actions">
+    <button id="mobile-cmd-btn" class="mobile-nav-cmd" type="button">
+      <span>Quick Search &amp; Actions</span>
+      <span class="kbd-hint">Ctrl K</span>
+    </button>
+    <button id="mobile-shortcuts-btn" class="mobile-nav-cmd" type="button" aria-label="Keyboard shortcuts">?</button>
+  </div>
 </div>
 
+<!-- ========== FLOATING SECTION RAIL ========== -->
+<aside id="section-rail" class="section-rail" aria-label="Section progress rail">
+  <a href="#home" class="rail-link"><span class="rail-label">00 Home</span><span class="rail-tick"></span></a>
+  <a href="#summary" class="rail-link"><span class="rail-label">01 Summary</span><span class="rail-tick"></span></a>
+  <a href="#experience" class="rail-link"><span class="rail-label">02 Experience</span><span class="rail-tick"></span></a>
+  <a href="#projects" class="rail-link"><span class="rail-label">03 Projects</span><span class="rail-tick"></span></a>
+  <a href="#skills" class="rail-link"><span class="rail-label">04 Skills</span><span class="rail-tick"></span></a>
+  <a href="#education" class="rail-link"><span class="rail-label">05 Education</span><span class="rail-tick"></span></a>
+</aside>
+
+<main id="ui-view">
 <!-- ========== HERO ========== -->
 <section id="home" class="hero">
   <div class="hero-grid" aria-hidden="true"></div>
+  <canvas id="hero-canvas" class="hero-canvas" aria-hidden="true"></canvas>
   <div id="hero-spotlight" class="hero-spotlight" aria-hidden="true"></div>
   <div class="hero-content">
     <div class="hero-text">
@@ -1563,12 +2028,12 @@ a.hero-contact-item:hover{color:var(--primary)}
       <p class="hero-title animate-in animate-in-d2">Software Engineer · Backend &amp; API Design</p>
 
       <div class="hero-contact animate-in animate-in-d3">
-        <span class="hero-contact-item">
+        <span class="hero-contact-item" data-field="location">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           Dhaka, Bangladesh
         </span>
         <span class="hero-contact-group">
-          <a href="mailto:tawhidaiub37@gmail.com" class="hero-contact-item">
+          <a href="mailto:tawhidaiub37@gmail.com" class="hero-contact-item" data-field="email">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
             tawhidaiub37@gmail.com
           </a>
@@ -1578,7 +2043,7 @@ a.hero-contact-item:hover{color:var(--primary)}
           </button>
         </span>
         <span class="hero-contact-group">
-          <span class="hero-contact-item">
+          <span class="hero-contact-item" data-field="phone">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             (+88) 01708 919 548
           </span>
@@ -1670,6 +2135,7 @@ a.hero-contact-item:hover{color:var(--primary)}
             <span class="timeline-date-wrap">
               <span class="timeline-status-dot" aria-hidden="true"></span>
               <span class="timeline-date">08/2026 – Present</span>
+              <span class="timeline-tenure" data-start="2026-08" data-end="present"></span>
             </span>
           </div>
           <ul class="timeline-list">
@@ -1686,6 +2152,7 @@ a.hero-contact-item:hover{color:var(--primary)}
             <span class="timeline-role">Software Engineer</span>
             <span class="timeline-date-wrap">
               <span class="timeline-date">09/2020 – 03/2026</span>
+              <span class="timeline-tenure" data-start="2020-09" data-end="2026-03"></span>
             </span>
           </div>
           <ul class="timeline-list">
@@ -1703,8 +2170,11 @@ a.hero-contact-item:hover{color:var(--primary)}
   <div class="container">
     <h2 class="section-title reveal"><span class="section-index">03</span>Projects</h2>
     <div class="projects-grid reveal-stagger">
-      <div id="project-elobooks" class="project-card spotlight-card">
-        <h3 class="project-name">ELOBOOKS</h3>
+      <div id="project-elobooks" class="project-card spotlight-card" tabindex="0" role="button" aria-label="Inspect ELOBOOKS">
+        <div class="project-head">
+          <h3 class="project-name">ELOBOOKS</h3>
+          <span class="project-inspect-pill" aria-hidden="true">Inspect ↗</span>
+        </div>
         <p class="project-type">Cloud-based Inventory Management SaaS</p>
         <ul class="project-list">
           <li>Designed and developed GraphQL APIs with documentation.</li>
@@ -1717,8 +2187,11 @@ a.hero-contact-item:hover{color:var(--primary)}
           <li>Implemented customized RBAC using Cloudsight.</li>
         </ul>
       </div>
-      <div id="project-recruitment" class="project-card spotlight-card">
-        <h3 class="project-name">Recruitment Platform</h3>
+      <div id="project-recruitment" class="project-card spotlight-card" tabindex="0" role="button" aria-label="Inspect Recruitment Platform">
+        <div class="project-head">
+          <h3 class="project-name">Recruitment Platform</h3>
+          <span class="project-inspect-pill" aria-hidden="true">Inspect ↗</span>
+        </div>
         <p class="project-type">Recruitment Assistance Application</p>
         <ul class="project-list">
           <li>Built RESTful API services to support efficient frontend and backend communication.</li>
@@ -1726,8 +2199,11 @@ a.hero-contact-item:hover{color:var(--primary)}
           <li>Introduced event-driven architecture to manage background processes and the corresponding action.</li>
         </ul>
       </div>
-      <div id="project-aero" class="project-card spotlight-card">
-        <h3 class="project-name">Aero &amp; Aero B2B</h3>
+      <div id="project-aero" class="project-card spotlight-card" tabindex="0" role="button" aria-label="Inspect Aero &amp; Aero B2B">
+        <div class="project-head">
+          <h3 class="project-name">Aero &amp; Aero B2B</h3>
+          <span class="project-inspect-pill" aria-hidden="true">Inspect ↗</span>
+        </div>
         <p class="project-type">E-commerce Storefront &amp; Wholesale Portal</p>
         <ul class="project-list">
           <li>Architected and developed modular backend services with NestJS and Node.js for both consumer storefront and wholesale portal.</li>
@@ -1735,15 +2211,21 @@ a.hero-contact-item:hover{color:var(--primary)}
           <li>Designed B2B partner APIs supporting tiered volume pricing, wholesale order approval flows, and real-time inventory tracking.</li>
         </ul>
       </div>
-      <div id="project-bagflyers" class="project-card spotlight-card">
-        <h3 class="project-name">BagFlyers</h3>
+      <div id="project-bagflyers" class="project-card spotlight-card" tabindex="0" role="button" aria-label="Inspect BagFlyers">
+        <div class="project-head">
+          <h3 class="project-name">BagFlyers</h3>
+          <span class="project-inspect-pill" aria-hidden="true">Inspect ↗</span>
+        </div>
         <p class="project-type">Hand-carry PaaS</p>
         <ul class="project-list">
           <li>Architected and developed RESTful APIs, alongside database design and management.</li>
         </ul>
       </div>
-      <div id="project-noorstudy" class="project-card spotlight-card">
-        <h3 class="project-name">The NOORSTUDY</h3>
+      <div id="project-noorstudy" class="project-card spotlight-card" tabindex="0" role="button" aria-label="Inspect The NOORSTUDY">
+        <div class="project-head">
+          <h3 class="project-name">The NOORSTUDY</h3>
+          <span class="project-inspect-pill" aria-hidden="true">Inspect ↗</span>
+        </div>
         <p class="project-type">Comprehensive Islamic Education Program</p>
         <ul class="project-list">
           <li>Built full-stack admin functionalities for course management.</li>
@@ -1964,6 +2446,31 @@ a.hero-contact-item:hover{color:var(--primary)}
     </div>
   </div>
 </section>
+</main>
+
+<!-- ========== LIVE JSON SCHEMA VIEW ========== -->
+<section id="json-view" class="json-view" aria-label="JSON View of Portfolio Data" hidden>
+  <div class="container">
+    <div class="json-shell">
+      <div class="json-toolbar">
+        <div class="json-meta">
+          <span class="json-file-pill">
+            <span class="json-file-dot" aria-hidden="true"></span>
+            portfolio.json
+          </span>
+          <span id="json-stats" class="json-stats"></span>
+        </div>
+        <div class="json-actions">
+          <button id="json-expand-all" class="json-btn" type="button">Expand All</button>
+          <button id="json-collapse-all" class="json-btn" type="button">Collapse All</button>
+          <button id="json-copy-btn" class="json-btn" type="button">Copy JSON</button>
+          <button id="json-download-btn" class="json-btn json-btn-primary" type="button">Download .json</button>
+        </div>
+      </div>
+      <div id="json-tree" class="json-tree"></div>
+    </div>
+  </div>
+</section>
 
 <!-- ========== FOOTER ========== -->
 <footer class="footer">
@@ -1973,14 +2480,15 @@ a.hero-contact-item:hover{color:var(--primary)}
       <a href="mailto:tawhidaiub37@gmail.com">Email</a>
       <a href="https://www.linkedin.com/in/tawhid37/" target="_blank" rel="noopener">LinkedIn</a>
       <a href="https://github.com/tawhid37" target="_blank" rel="noopener">GitHub</a>
-      <button id="back-to-top" class="footer-top-btn" type="button" aria-label="Back to top">↑ Top</button>
+      <button id="footer-shortcuts-btn" class="footer-util-btn" type="button" aria-label="Open keyboard shortcuts">? Shortcuts</button>
+      <button id="back-to-top" class="footer-util-btn" type="button" aria-label="Back to top">↑ Top</button>
     </div>
   </div>
 </footer>
 
 <!-- ========== CV PREVIEW MODAL ========== -->
 <div id="cv-modal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="cv-modal-title">
-  <div class="modal-card">
+  <div id="cv-modal-card" class="modal-card">
     <div class="modal-header">
       <h3 id="cv-modal-title" class="modal-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;color:var(--primary)" aria-hidden="true">
@@ -1998,15 +2506,32 @@ a.hero-contact-item:hover{color:var(--primary)}
           </svg>
           Download PDF
         </a>
-        <a href="./Tawhid_Sultan_CV.pdf" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" aria-label="Open in new tab" title="Open in new tab">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px" aria-hidden="true">
+        <button id="cv-print-btn" class="modal-close-btn" type="button" aria-label="Print CV" title="Print CV">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+          </svg>
+        </button>
+        <button id="cv-fullscreen-btn" class="modal-close-btn" type="button" aria-label="Toggle fullscreen" aria-pressed="false" title="Fullscreen">
+          <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+            <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+          </svg>
+          <svg class="compress-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/>
+            <line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/>
+          </svg>
+        </button>
+        <a href="./Tawhid_Sultan_CV.pdf" target="_blank" rel="noopener" class="modal-close-btn" aria-label="Open in new tab" title="Open in new tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
             <polyline points="15 3 21 3 21 9"></polyline>
             <line x1="10" y1="14" x2="21" y2="3"></line>
           </svg>
         </a>
         <button id="cv-modal-close" class="modal-close-btn" type="button" aria-label="Close modal" title="Close (Esc)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -2015,6 +2540,34 @@ a.hero-contact-item:hover{color:var(--primary)}
     </div>
     <div class="modal-body">
       <iframe id="cv-frame" src="about:blank" title="CV PDF Preview"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PROJECT INSPECTOR DRAWER ========== -->
+<div id="project-drawer" class="modal-backdrop drawer-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drawer-project-title">
+  <div class="drawer-panel">
+    <div class="drawer-header">
+      <span id="drawer-kicker" class="drawer-kicker">PROJECT // 01</span>
+      <div class="modal-actions">
+        <button id="drawer-copy-link" class="btn btn-secondary btn-sm" type="button">Copy Link</button>
+        <button id="drawer-close-btn" class="modal-close-btn" type="button" aria-label="Close project inspector" title="Close (Esc)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <h3 id="drawer-project-title" class="drawer-title"></h3>
+      <span id="drawer-project-type" class="project-type"></span>
+      <ul id="drawer-project-list" class="drawer-list"></ul>
+    </div>
+    <div class="drawer-footer">
+      <button id="drawer-prev-btn" class="btn btn-secondary btn-sm" type="button">← Previous</button>
+      <span id="drawer-counter" class="drawer-counter">1 / 5</span>
+      <button id="drawer-next-btn" class="btn btn-secondary btn-sm" type="button">Next →</button>
     </div>
   </div>
 </div>
@@ -2035,6 +2588,30 @@ a.hero-contact-item:hover{color:var(--primary)}
       <span>↑↓ Navigate</span>
       <span>↵ Execute</span>
       <span>Esc Close</span>
+    </div>
+  </div>
+</div>
+
+<!-- ========== KEYBOARD SHORTCUTS MODAL ========== -->
+<div id="shortcuts-modal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title">
+  <div class="shortcuts-dialog">
+    <div class="modal-header">
+      <h3 id="shortcuts-title" class="modal-title">Keyboard Shortcuts</h3>
+      <button id="shortcuts-close-btn" class="modal-close-btn" type="button" aria-label="Close shortcuts" title="Close (Esc)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="shortcuts-body">
+      <div class="shortcut-row"><span>Open Command Palette</span><span class="shortcut-keys"><kbd class="shortcut-key">Ctrl / ⌘</kbd><kbd class="shortcut-key">K</kbd></span></div>
+      <div class="shortcut-row"><span>Toggle UI / JSON View</span><span class="shortcut-keys"><kbd class="shortcut-key">J</kbd></span></div>
+      <div class="shortcut-row"><span>Toggle Light / Dark Theme</span><span class="shortcut-keys"><kbd class="shortcut-key">T</kbd></span></div>
+      <div class="shortcut-row"><span>Jump to Sections (Home → Education)</span><span class="shortcut-keys"><kbd class="shortcut-key">1</kbd>–<kbd class="shortcut-key">6</kbd></span></div>
+      <div class="shortcut-row"><span>Step Projects (in Project Inspector)</span><span class="shortcut-keys"><kbd class="shortcut-key">←</kbd><kbd class="shortcut-key">→</kbd></span></div>
+      <div class="shortcut-row"><span>Show This Shortcuts Guide</span><span class="shortcut-keys"><kbd class="shortcut-key">?</kbd></span></div>
+      <div class="shortcut-row"><span>Close Active Modal or Drawer</span><span class="shortcut-keys"><kbd class="shortcut-key">Esc</kbd></span></div>
     </div>
   </div>
 </div>
@@ -2100,16 +2677,46 @@ a.hero-contact-item:hover{color:var(--primary)}
     });
   });
 
-  /* ---------- Theme Toggle ---------- */
-  function toggleTheme() {
-    var current = document.documentElement.getAttribute('data-theme') || 'light';
-    var next = current === 'dark' ? 'light' : 'dark';
+  /* ---------- Theme Toggle + View Transitions Ripple ---------- */
+  var themeBtn = document.getElementById('theme-toggle');
+
+  function applyTheme(next) {
     document.documentElement.setAttribute('data-theme', next);
     try { localStorage.setItem('theme', next); } catch (e) {}
+  }
+
+  function toggleTheme(originEvent) {
+    var current = document.documentElement.getAttribute('data-theme') || 'light';
+    var next = current === 'dark' ? 'light' : 'dark';
+
+    if (reducedMotion || typeof document.startViewTransition !== 'function') {
+      applyTheme(next);
+      showToast('Switched to ' + next + ' mode');
+      return;
+    }
+
+    var x = innerWidth / 2;
+    var y = 30;
+    if (originEvent && typeof originEvent.clientX === 'number' && originEvent.clientX > 0) {
+      x = originEvent.clientX;
+      y = originEvent.clientY;
+    } else if (themeBtn) {
+      var r = themeBtn.getBoundingClientRect();
+      x = r.left + r.width / 2;
+      y = r.top + r.height / 2;
+    }
+    var endRadius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+
+    var transition = document.startViewTransition(function() { applyTheme(next); });
+    transition.ready.then(function() {
+      document.documentElement.animate(
+        { clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + endRadius + 'px at ' + x + 'px ' + y + 'px)'] },
+        { duration: 420, easing: 'cubic-bezier(.22,1,.36,1)', pseudoElement: '::view-transition-new(root)' }
+      );
+    }).catch(function() {});
     showToast('Switched to ' + next + ' mode');
   }
 
-  var themeBtn = document.getElementById('theme-toggle');
   if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
 
   /* ---------- Platform Shortcut Hint ---------- */
@@ -2117,10 +2724,43 @@ a.hero-contact-item:hover{color:var(--primary)}
   var kbdHint = document.getElementById('cmd-kbd-hint');
   if (kbdHint) kbdHint.textContent = isMac ? '⌘K' : 'Ctrl K';
 
-  /* ---------- Scroll Spy & Progress Bar ---------- */
+  /* ---------- Inclusive Experience Tenure Badges ---------- */
+  function parseYearMonth(token) {
+    if (!token || token === 'present') {
+      var now = new Date();
+      return { y: now.getFullYear(), m: now.getMonth() + 1 };
+    }
+    var parts = token.split('-');
+    return { y: parseInt(parts[0], 10), m: parseInt(parts[1], 10) };
+  }
+
+  function formatInclusiveTenure(startStr, endStr) {
+    var s = parseYearMonth(startStr);
+    var e = parseYearMonth(endStr);
+    var totalMonths = (e.y - s.y) * 12 + (e.m - s.m) + 1;
+    if (!isFinite(totalMonths) || totalMonths <= 0) return '';
+    var yrs = Math.floor(totalMonths / 12);
+    var mos = totalMonths % 12;
+    var parts = [];
+    if (yrs > 0) parts.push(yrs + (yrs === 1 ? ' yr' : ' yrs'));
+    if (mos > 0) parts.push(mos + (mos === 1 ? ' mo' : ' mos'));
+    return parts.join(' ');
+  }
+
+  document.querySelectorAll('.timeline-tenure').forEach(function(el) {
+    var txt = formatInclusiveTenure(el.getAttribute('data-start'), el.getAttribute('data-end'));
+    if (txt) {
+      el.textContent = txt;
+    } else {
+      el.style.display = 'none';
+    }
+  });
+
+  /* ---------- Scroll Spy, Progress Bar & Section Rail ---------- */
   var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
   var mobileNavLinks = Array.prototype.slice.call(document.querySelectorAll('#mobile-nav a'));
-  var allNavLinks = navLinks.concat(mobileNavLinks);
+  var railLinks = Array.prototype.slice.call(document.querySelectorAll('.rail-link'));
+  var allNavLinks = navLinks.concat(mobileNavLinks, railLinks);
   var sections = navLinks
     .map(function(a) { return document.querySelector(a.getAttribute('href')); })
     .filter(Boolean);
@@ -2133,6 +2773,8 @@ a.hero-contact-item:hover{color:var(--primary)}
       var ratio = docHeight > 0 ? Math.min(1, Math.max(0, scrollY / docHeight)) : 0;
       progressEl.style.transform = 'scaleX(' + ratio.toFixed(4) + ')';
     }
+    if (document.body.getAttribute('data-view') === 'json') return;
+
     var y = scrollY + 125;
     var atBottom = (window.innerHeight + scrollY) >= (document.documentElement.scrollHeight - 4);
     var current = sections[0];
@@ -2155,6 +2797,275 @@ a.hero-contact-item:hover{color:var(--primary)}
       window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
     });
   }
+
+  /* ---------- View Switch (UI | JSON Live Schema View) ---------- */
+  var uiViewEl = document.getElementById('ui-view');
+  var jsonViewEl = document.getElementById('json-view');
+  var sectionRailEl = document.getElementById('section-rail');
+  var viewSwitchBtns = Array.prototype.slice.call(document.querySelectorAll('.view-switch-btn'));
+  var jsonTreeEl = document.getElementById('json-tree');
+  var jsonStatsEl = document.getElementById('json-stats');
+  var serializedJsonString = '';
+  var jsonRendered = false;
+
+  function cleanText(el) {
+    return el ? el.textContent.replace(/\s+/g, ' ').trim() : '';
+  }
+
+  function serializePortfolioData() {
+    return {
+      profile: {
+        name: cleanText(document.querySelector('.hero-name')),
+        title: cleanText(document.querySelector('.hero-title')),
+        status: cleanText(document.querySelector('.hero-badge')),
+        location: cleanText(document.querySelector('[data-field="location"]')),
+        email: cleanText(document.querySelector('[data-field="email"]')),
+        phone: cleanText(document.querySelector('[data-field="phone"]')),
+        links: {
+          linkedin: 'https://www.linkedin.com/in/tawhid37/',
+          github: 'https://github.com/tawhid37',
+          cv: './Tawhid_Sultan_CV.pdf'
+        }
+      },
+      metrics: Array.prototype.slice.call(document.querySelectorAll('.metric-card')).map(function(c) {
+        return {
+          value: cleanText(c.querySelector('.metric-value')),
+          label: cleanText(c.querySelector('.metric-label'))
+        };
+      }),
+      summary: cleanText(document.querySelector('.summary-text')),
+      experience: Array.prototype.slice.call(document.querySelectorAll('.timeline-item')).map(function(item) {
+        return {
+          company: cleanText(item.querySelector('.timeline-company')),
+          role: cleanText(item.querySelector('.timeline-role')),
+          period: cleanText(item.querySelector('.timeline-date')),
+          highlights: Array.prototype.slice.call(item.querySelectorAll('.timeline-list li')).map(cleanText)
+        };
+      }),
+      projects: Array.prototype.slice.call(document.querySelectorAll('.project-card')).map(function(card) {
+        return {
+          id: card.id,
+          name: cleanText(card.querySelector('.project-name')),
+          type: cleanText(card.querySelector('.project-type')),
+          highlights: Array.prototype.slice.call(card.querySelectorAll('.project-list li')).map(cleanText)
+        };
+      }),
+      skills: Array.prototype.slice.call(document.querySelectorAll('.skill-group')).map(function(grp) {
+        return {
+          group: cleanText(grp.querySelector('.skill-group-title')),
+          items: Array.prototype.slice.call(grp.querySelectorAll('.skill-badge')).map(cleanText)
+        };
+      }),
+      education: Array.prototype.slice.call(document.querySelectorAll('.edu-item')).map(function(edu) {
+        return {
+          degree: cleanText(edu.querySelector('.edu-degree')),
+          institution: cleanText(edu.querySelector('.edu-institution')),
+          period: cleanText(edu.querySelector('.edu-date'))
+        };
+      }),
+      publication: {
+        title: cleanText(document.querySelector('.pub-card-title')),
+        doi: '10.5120/ijca2021921309',
+        doiUrl: 'https://doi.org/10.5120/ijca2021921309',
+        description: cleanText(document.querySelector('.pub-card-desc'))
+      }
+    };
+  }
+
+  function buildJsonNode(val, keyName, isLast) {
+    var comma = isLast ? '' : ',';
+    var isArr = Array.isArray(val);
+    var isObj = val !== null && typeof val === 'object';
+
+    if (!isObj) {
+      var row = document.createElement('div');
+      row.className = 'json-node-line';
+      if (keyName !== null) {
+        var kSpan = document.createElement('span');
+        kSpan.className = 'json-key';
+        kSpan.textContent = JSON.stringify(keyName);
+        row.appendChild(kSpan);
+        var colon = document.createElement('span');
+        colon.className = 'json-punct';
+        colon.textContent = ': ';
+        row.appendChild(colon);
+      }
+      var vSpan = document.createElement('span');
+      vSpan.className = typeof val === 'number' ? 'json-num' : 'json-str';
+      vSpan.textContent = JSON.stringify(val);
+      row.appendChild(vSpan);
+      if (comma) {
+        var cSpan = document.createElement('span');
+        cSpan.className = 'json-punct';
+        cSpan.textContent = comma;
+        row.appendChild(cSpan);
+      }
+      return row;
+    }
+
+    var branch = document.createElement('div');
+    branch.className = 'json-branch';
+    var entries = isArr ? val : Object.keys(val);
+    var openBracket = isArr ? '[' : '{';
+    var closeBracket = isArr ? ']' : '}';
+
+    var head = document.createElement('div');
+    head.className = 'json-node-line';
+
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'json-toggle';
+    toggle.textContent = '▾';
+    toggle.setAttribute('aria-label', 'Toggle ' + (keyName || 'node'));
+    toggle.setAttribute('aria-expanded', 'true');
+    toggle.addEventListener('click', function() {
+      var collapsed = branch.classList.toggle('is-collapsed');
+      toggle.textContent = collapsed ? '▸' : '▾';
+      toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    });
+    head.appendChild(toggle);
+
+    if (keyName !== null) {
+      var keyEl = document.createElement('span');
+      keyEl.className = 'json-key';
+      keyEl.textContent = JSON.stringify(keyName);
+      head.appendChild(keyEl);
+      var colEl = document.createElement('span');
+      colEl.className = 'json-punct';
+      colEl.textContent = ': ';
+      head.appendChild(colEl);
+    }
+
+    var openEl = document.createElement('span');
+    openEl.className = 'json-punct';
+    openEl.textContent = openBracket;
+    head.appendChild(openEl);
+
+    var preview = document.createElement('span');
+    preview.className = 'json-collapsed-preview';
+    preview.textContent = (isArr ? entries.length + ' items' : entries.length + ' keys') + ' ' + closeBracket + comma;
+    head.appendChild(preview);
+
+    branch.appendChild(head);
+
+    var children = document.createElement('div');
+    children.className = 'json-children';
+    entries.forEach(function(item, idx) {
+      var childLast = idx === entries.length - 1;
+      if (isArr) {
+        children.appendChild(buildJsonNode(item, null, childLast));
+      } else {
+        children.appendChild(buildJsonNode(val[item], item, childLast));
+      }
+    });
+    branch.appendChild(children);
+
+    var closeLine = document.createElement('div');
+    closeLine.className = 'json-close-line json-punct';
+    closeLine.textContent = closeBracket + comma;
+    branch.appendChild(closeLine);
+
+    return branch;
+  }
+
+  function ensureJsonRendered() {
+    if (jsonRendered || !jsonTreeEl) return;
+    var data = serializePortfolioData();
+    serializedJsonString = JSON.stringify(data, null, 2);
+    var lineCount = serializedJsonString.split('\n').length;
+    var bytes = new Blob([serializedJsonString]).size;
+    if (jsonStatsEl) {
+      jsonStatsEl.textContent = lineCount + ' lines · ' + (bytes / 1024).toFixed(1) + ' KB';
+    }
+    jsonTreeEl.innerHTML = '';
+    jsonTreeEl.appendChild(buildJsonNode(data, null, true));
+    jsonRendered = true;
+  }
+
+  function setViewMode(mode) {
+    var isJson = mode === 'json';
+    document.body.setAttribute('data-view', isJson ? 'json' : 'ui');
+    viewSwitchBtns.forEach(function(b) {
+      var act = b.getAttribute('data-view-target') === (isJson ? 'json' : 'ui');
+      b.classList.toggle('active', act);
+      b.setAttribute('aria-pressed', act ? 'true' : 'false');
+    });
+    if (isJson) {
+      ensureJsonRendered();
+      if (uiViewEl) uiViewEl.hidden = true;
+      if (sectionRailEl) sectionRailEl.hidden = true;
+      if (jsonViewEl) jsonViewEl.hidden = false;
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    } else {
+      if (jsonViewEl) jsonViewEl.hidden = true;
+      if (uiViewEl) uiViewEl.hidden = false;
+      if (sectionRailEl) sectionRailEl.hidden = false;
+    }
+    updateScrollState();
+  }
+
+  viewSwitchBtns.forEach(function(b) {
+    b.addEventListener('click', function() {
+      setViewMode(b.getAttribute('data-view-target') || 'ui');
+    });
+  });
+
+  var jsonExpandAll = document.getElementById('json-expand-all');
+  var jsonCollapseAll = document.getElementById('json-collapse-all');
+  var jsonCopyBtn = document.getElementById('json-copy-btn');
+  var jsonDownloadBtn = document.getElementById('json-download-btn');
+
+  if (jsonExpandAll) {
+    jsonExpandAll.addEventListener('click', function() {
+      if (!jsonTreeEl) return;
+      jsonTreeEl.querySelectorAll('.json-branch').forEach(function(b) {
+        b.classList.remove('is-collapsed');
+        var t = b.querySelector(':scope > .json-node-line > .json-toggle');
+        if (t) { t.textContent = '▾'; t.setAttribute('aria-expanded', 'true'); }
+      });
+    });
+  }
+  if (jsonCollapseAll) {
+    jsonCollapseAll.addEventListener('click', function() {
+      if (!jsonTreeEl) return;
+      jsonTreeEl.querySelectorAll('.json-children .json-branch').forEach(function(b) {
+        b.classList.add('is-collapsed');
+        var t = b.querySelector(':scope > .json-node-line > .json-toggle');
+        if (t) { t.textContent = '▸'; t.setAttribute('aria-expanded', 'false'); }
+      });
+    });
+  }
+  if (jsonCopyBtn) {
+    jsonCopyBtn.addEventListener('click', function() {
+      ensureJsonRendered();
+      copyText(serializedJsonString, 'Portfolio JSON');
+    });
+  }
+  if (jsonDownloadBtn) {
+    jsonDownloadBtn.addEventListener('click', function() {
+      ensureJsonRendered();
+      var blob = new Blob([serializedJsonString], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'tawhid-sultan-portfolio.json';
+      a.click();
+      setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+      showToast('Downloaded tawhid-sultan-portfolio.json');
+    });
+  }
+
+  /* Ensure clicking nav anchor links in JSON View returns seamlessly to UI View */
+  navLinks.concat(mobileNavLinks).forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      if (document.body.getAttribute('data-view') === 'json') {
+        e.preventDefault();
+        var href = link.getAttribute('href');
+        setViewMode('ui');
+        jumpToTarget(href);
+      }
+    });
+  });
 
   /* ---------- Mobile Navigation Drawer ---------- */
   var mobileBtn = document.getElementById('mobile-menu-btn');
@@ -2179,7 +3090,7 @@ a.hero-contact-item:hover{color:var(--primary)}
       }
     });
     window.addEventListener('resize', function() {
-      if (window.innerWidth > 820 && mobileNav.classList.contains('open')) setMobileNav(false);
+      if (window.innerWidth > 860 && mobileNav.classList.contains('open')) setMobileNav(false);
     });
   }
 
@@ -2215,6 +3126,140 @@ a.hero-contact-item:hover{color:var(--primary)}
       requestAnimationFrame(step);
     });
   }
+
+  /* ---------- Hero Topology Canvas (Orthogonal Grid & Data Packets) ---------- */
+  (function initHeroCanvas() {
+    var canvas = document.getElementById('hero-canvas');
+    var hero = document.getElementById('home');
+    if (!canvas || !hero || reducedMotion) return;
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    var width = 0;
+    var height = 0;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var gridSize = 56;
+    var pointer = { x: -9999, y: -9999, active: false };
+    var packets = [];
+    var rafId = 0;
+
+    function resize() {
+      var rect = hero.getBoundingClientRect();
+      width = Math.max(1, Math.floor(rect.width));
+      height = Math.max(1, Math.floor(rect.height));
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seedPackets();
+    }
+
+    function seedPackets() {
+      var cols = Math.max(2, Math.floor(width / gridSize));
+      var rows = Math.max(2, Math.floor(height / gridSize));
+      var targetCount = Math.min(16, Math.max(8, Math.floor((cols * rows) / 14)));
+      packets = [];
+      for (var i = 0; i < targetCount; i++) {
+        var horiz = i % 2 === 0;
+        packets.push({
+          horiz: horiz,
+          x: Math.floor(Math.random() * cols) * gridSize,
+          y: Math.floor(Math.random() * rows) * gridSize,
+          dir: Math.random() < 0.5 ? 1 : -1,
+          speed: 0.7 + Math.random() * 0.9
+        });
+      }
+    }
+
+    function accentRgb() {
+      return document.documentElement.getAttribute('data-theme') === 'dark' ? '56,189,248' : '0,161,224';
+    }
+
+    function frame() {
+      if (document.hidden || document.body.getAttribute('data-view') === 'json') {
+        rafId = requestAnimationFrame(frame);
+        return;
+      }
+      ctx.clearRect(0, 0, width, height);
+      var rgb = accentRgb();
+
+      /* Subtle interactive grid nodes near pointer */
+      if (pointer.active) {
+        var radius = 140;
+        var startCol = Math.max(0, Math.floor((pointer.x - radius) / gridSize));
+        var endCol = Math.min(Math.ceil(width / gridSize), Math.ceil((pointer.x + radius) / gridSize));
+        var startRow = Math.max(0, Math.floor((pointer.y - radius) / gridSize));
+        var endRow = Math.min(Math.ceil(height / gridSize), Math.ceil((pointer.y + radius) / gridSize));
+
+        for (var c = startCol; c <= endCol; c++) {
+          for (var r = startRow; r <= endRow; r++) {
+            var gx = c * gridSize;
+            var gy = r * gridSize;
+            var dist = Math.hypot(gx - pointer.x, gy - pointer.y);
+            if (dist < radius) {
+              var alpha = (1 - dist / radius) * 0.55;
+              ctx.fillStyle = 'rgba(' + rgb + ',' + alpha.toFixed(3) + ')';
+              ctx.beginPath();
+              ctx.arc(gx, gy, 2.2, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+        }
+      }
+
+      /* Orthogonal data packets */
+      for (var i = 0; i < packets.length; i++) {
+        var p = packets[i];
+        if (p.horiz) {
+          p.x += p.dir * p.speed;
+          if (p.x > width + 40) p.x = -40;
+          if (p.x < -40) p.x = width + 40;
+        } else {
+          p.y += p.dir * p.speed;
+          if (p.y > height + 40) p.y = -40;
+          if (p.y < -40) p.y = height + 40;
+        }
+
+        var tailLen = 36;
+        var x1 = p.horiz ? p.x - p.dir * tailLen : p.x;
+        var y1 = p.horiz ? p.y : p.y - p.dir * tailLen;
+        var grad = ctx.createLinearGradient(x1, y1, p.x, p.y);
+        grad.addColorStop(0, 'rgba(' + rgb + ',0)');
+        grad.addColorStop(1, 'rgba(' + rgb + ',0.55)');
+
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(' + rgb + ',0.85)';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      rafId = requestAnimationFrame(frame);
+    }
+
+    if (hoverCapable) {
+      hero.addEventListener('pointermove', function(e) {
+        var rect = hero.getBoundingClientRect();
+        pointer.x = e.clientX - rect.left;
+        pointer.y = e.clientY - rect.top;
+        pointer.active = true;
+      }, { passive: true });
+      hero.addEventListener('pointerleave', function() { pointer.active = false; }, { passive: true });
+    }
+
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(resize).observe(hero);
+    } else {
+      window.addEventListener('resize', resize);
+    }
+    resize();
+    rafId = requestAnimationFrame(frame);
+  })();
 
   /* ---------- Cursor Spotlight (Hero + Cards) ---------- */
   if (!reducedMotion && hoverCapable) {
@@ -2317,7 +3362,7 @@ a.hero-contact-item:hover{color:var(--primary)}
     skillResetBtn.addEventListener('click', function() { setSkillFilter('all', ''); });
   }
 
-  /* ---------- Accessible Modal Helpers ---------- */
+  /* ---------- Shared Accessible Modal Helpers ---------- */
   function getFocusable(container) {
     return Array.prototype.slice.call(
       container.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')
@@ -2342,7 +3387,10 @@ a.hero-contact-item:hover{color:var(--primary)}
   /* ---------- CV Preview Modal ---------- */
   var cvOpenBtn = document.getElementById('view-cv-btn');
   var cvModal = document.getElementById('cv-modal');
+  var cvModalCard = document.getElementById('cv-modal-card');
   var cvCloseBtn = document.getElementById('cv-modal-close');
+  var cvPrintBtn = document.getElementById('cv-print-btn');
+  var cvFullscreenBtn = document.getElementById('cv-fullscreen-btn');
   var cvFrame = document.getElementById('cv-frame');
   var cvUrl = './Tawhid_Sultan_CV.pdf';
   var cvReturnFocus = null;
@@ -2362,6 +3410,9 @@ a.hero-contact-item:hover{color:var(--primary)}
   function closeCvModal() {
     if (!cvModal) return;
     cvModal.classList.remove('open');
+    cvModal.classList.remove('is-fullscreen');
+    if (cvModalCard) cvModalCard.classList.remove('is-fullscreen');
+    if (cvFullscreenBtn) cvFullscreenBtn.setAttribute('aria-pressed', 'false');
     cvModal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
     if (cvReturnFocus && typeof cvReturnFocus.focus === 'function') cvReturnFocus.focus();
@@ -2369,9 +3420,153 @@ a.hero-contact-item:hover{color:var(--primary)}
 
   if (cvOpenBtn) cvOpenBtn.addEventListener('click', openCvModal);
   if (cvCloseBtn) cvCloseBtn.addEventListener('click', closeCvModal);
+  if (cvFullscreenBtn && cvModalCard && cvModal) {
+    cvFullscreenBtn.addEventListener('click', function() {
+      var fs = !cvModalCard.classList.contains('is-fullscreen');
+      cvModalCard.classList.toggle('is-fullscreen', fs);
+      cvModal.classList.toggle('is-fullscreen', fs);
+      cvFullscreenBtn.setAttribute('aria-pressed', fs ? 'true' : 'false');
+    });
+  }
+  if (cvPrintBtn && cvFrame) {
+    cvPrintBtn.addEventListener('click', function() {
+      try {
+        if (cvFrame.contentWindow) {
+          cvFrame.contentWindow.focus();
+          cvFrame.contentWindow.print();
+          return;
+        }
+      } catch (e) {}
+      window.open(cvUrl, '_blank', 'noopener');
+    });
+  }
   if (cvModal) {
     cvModal.addEventListener('click', function(e) { if (e.target === cvModal) closeCvModal(); });
     cvModal.addEventListener('keydown', function(e) { trapModalTab(cvModal, e); });
+  }
+
+  /* ---------- Project Inspector Slide-Over Drawer ---------- */
+  var projectCards = Array.prototype.slice.call(document.querySelectorAll('.project-card'));
+  var drawerEl = document.getElementById('project-drawer');
+  var drawerKicker = document.getElementById('drawer-kicker');
+  var drawerTitle = document.getElementById('drawer-project-title');
+  var drawerType = document.getElementById('drawer-project-type');
+  var drawerList = document.getElementById('drawer-project-list');
+  var drawerCounter = document.getElementById('drawer-counter');
+  var drawerCloseBtn = document.getElementById('drawer-close-btn');
+  var drawerPrevBtn = document.getElementById('drawer-prev-btn');
+  var drawerNextBtn = document.getElementById('drawer-next-btn');
+  var drawerCopyLinkBtn = document.getElementById('drawer-copy-link');
+  var activeProjectIdx = 0;
+  var drawerReturnFocus = null;
+
+  function renderProjectDrawer(idx) {
+    if (!projectCards.length) return;
+    activeProjectIdx = (idx + projectCards.length) % projectCards.length;
+    var card = projectCards[activeProjectIdx];
+    var numStr = String(activeProjectIdx + 1).padStart(2, '0');
+    if (drawerKicker) drawerKicker.textContent = 'PROJECT // ' + numStr;
+    if (drawerTitle) drawerTitle.textContent = cleanText(card.querySelector('.project-name'));
+    if (drawerType) drawerType.textContent = cleanText(card.querySelector('.project-type'));
+    if (drawerCounter) drawerCounter.textContent = (activeProjectIdx + 1) + ' / ' + projectCards.length;
+    if (drawerList) {
+      drawerList.innerHTML = '';
+      card.querySelectorAll('.project-list li').forEach(function(li, i) {
+        var item = document.createElement('li');
+        item.setAttribute('data-step', String(i + 1).padStart(2, '0'));
+        item.textContent = cleanText(li);
+        drawerList.appendChild(item);
+      });
+    }
+  }
+
+  function openProjectDrawer(idx) {
+    if (!drawerEl) return;
+    drawerReturnFocus = document.activeElement;
+    renderProjectDrawer(idx);
+    drawerEl.classList.add('open');
+    drawerEl.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    if (drawerCloseBtn) drawerCloseBtn.focus();
+  }
+
+  function closeProjectDrawer() {
+    if (!drawerEl) return;
+    drawerEl.classList.remove('open');
+    drawerEl.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (drawerReturnFocus && typeof drawerReturnFocus.focus === 'function') drawerReturnFocus.focus();
+  }
+
+  projectCards.forEach(function(card, idx) {
+    card.addEventListener('click', function() { openProjectDrawer(idx); });
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openProjectDrawer(idx);
+      }
+    });
+  });
+
+  if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeProjectDrawer);
+  if (drawerPrevBtn) drawerPrevBtn.addEventListener('click', function() { renderProjectDrawer(activeProjectIdx - 1); });
+  if (drawerNextBtn) drawerNextBtn.addEventListener('click', function() { renderProjectDrawer(activeProjectIdx + 1); });
+  if (drawerCopyLinkBtn) {
+    drawerCopyLinkBtn.addEventListener('click', function() {
+      var card = projectCards[activeProjectIdx];
+      if (!card) return;
+      var shareUrl = window.location.href.split('#')[0] + '#' + card.id;
+      copyText(shareUrl, 'Project link');
+    });
+  }
+  if (drawerEl) {
+    drawerEl.addEventListener('click', function(e) { if (e.target === drawerEl) closeProjectDrawer(); });
+    drawerEl.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        renderProjectDrawer(activeProjectIdx - 1);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        renderProjectDrawer(activeProjectIdx + 1);
+      } else {
+        trapModalTab(drawerEl, e);
+      }
+    });
+  }
+
+  /* ---------- Shortcuts Modal ---------- */
+  var shortcutsModal = document.getElementById('shortcuts-modal');
+  var shortcutsOpenBtn = document.getElementById('shortcuts-open-btn');
+  var mobileShortcutsBtn = document.getElementById('mobile-shortcuts-btn');
+  var footerShortcutsBtn = document.getElementById('footer-shortcuts-btn');
+  var shortcutsCloseBtn = document.getElementById('shortcuts-close-btn');
+  var shortcutsReturnFocus = null;
+
+  function openShortcutsModal() {
+    if (!shortcutsModal) return;
+    setMobileNav(false);
+    shortcutsReturnFocus = document.activeElement;
+    shortcutsModal.classList.add('open');
+    shortcutsModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    if (shortcutsCloseBtn) shortcutsCloseBtn.focus();
+  }
+
+  function closeShortcutsModal() {
+    if (!shortcutsModal) return;
+    shortcutsModal.classList.remove('open');
+    shortcutsModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (shortcutsReturnFocus && typeof shortcutsReturnFocus.focus === 'function') shortcutsReturnFocus.focus();
+  }
+
+  if (shortcutsOpenBtn) shortcutsOpenBtn.addEventListener('click', openShortcutsModal);
+  if (mobileShortcutsBtn) mobileShortcutsBtn.addEventListener('click', openShortcutsModal);
+  if (footerShortcutsBtn) footerShortcutsBtn.addEventListener('click', openShortcutsModal);
+  if (shortcutsCloseBtn) shortcutsCloseBtn.addEventListener('click', closeShortcutsModal);
+  if (shortcutsModal) {
+    shortcutsModal.addEventListener('click', function(e) { if (e.target === shortcutsModal) closeShortcutsModal(); });
+    shortcutsModal.addEventListener('keydown', function(e) { trapModalTab(shortcutsModal, e); });
   }
 
   /* ---------- Command Palette (Ctrl+K / Cmd+K) ---------- */
@@ -2385,6 +3580,7 @@ a.hero-contact-item:hover{color:var(--primary)}
   var filteredCommands = [];
 
   function jumpToTarget(selector) {
+    if (document.body.getAttribute('data-view') === 'json') setViewMode('ui');
     var target = document.querySelector(selector);
     if (!target) return;
     target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
@@ -2402,17 +3598,21 @@ a.hero-contact-item:hover{color:var(--primary)}
   };
 
   var staticCommands = [
-    { group: 'Navigate', title: 'Home', meta: '#home', icon: 'nav', keywords: 'hero top contact', run: function() { jumpToTarget('#home'); } },
-    { group: 'Navigate', title: 'Summary', meta: '#summary', icon: 'nav', keywords: 'bio overview fintech saas', run: function() { jumpToTarget('#summary'); } },
-    { group: 'Navigate', title: 'Experience', meta: '#experience', icon: 'nav', keywords: 'tripfindy elo work timeline', run: function() { jumpToTarget('#experience'); } },
-    { group: 'Navigate', title: 'Projects', meta: '#projects', icon: 'nav', keywords: 'portfolio systems', run: function() { jumpToTarget('#projects'); } },
-    { group: 'Navigate', title: 'Skills', meta: '#skills', icon: 'nav', keywords: 'stack languages frameworks', run: function() { jumpToTarget('#skills'); } },
-    { group: 'Navigate', title: 'Education & Publications', meta: '#education', icon: 'nav', keywords: 'aiub degree msc bsc paper doi', run: function() { jumpToTarget('#education'); } },
-    { group: 'Projects', title: 'ELOBOOKS', meta: 'Inventory SaaS', icon: 'proj', keywords: 'graphql websocket microservice cloudsight rbac', run: function() { jumpToTarget('#project-elobooks'); } },
-    { group: 'Projects', title: 'Recruitment Platform', meta: 'REST & Event-driven', icon: 'proj', keywords: 'rest job matching', run: function() { jumpToTarget('#project-recruitment'); } },
-    { group: 'Projects', title: 'Aero & Aero B2B', meta: 'NestJS · E-commerce', icon: 'proj', keywords: 'nestjs node bkash cod b2b', run: function() { jumpToTarget('#project-aero'); } },
-    { group: 'Projects', title: 'BagFlyers', meta: 'Hand-carry PaaS', icon: 'proj', keywords: 'rest database', run: function() { jumpToTarget('#project-bagflyers'); } },
-    { group: 'Projects', title: 'The NOORSTUDY', meta: 'Multi-tenant · RBAC', icon: 'proj', keywords: 'admin multi-tenancy education', run: function() { jumpToTarget('#project-noorstudy'); } },
+    { group: 'Navigate', title: 'Home', meta: '#home · 1', icon: 'nav', keywords: 'hero top contact', run: function() { jumpToTarget('#home'); } },
+    { group: 'Navigate', title: 'Summary', meta: '#summary · 2', icon: 'nav', keywords: 'bio overview fintech saas', run: function() { jumpToTarget('#summary'); } },
+    { group: 'Navigate', title: 'Experience', meta: '#experience · 3', icon: 'nav', keywords: 'tripfindy elo work timeline', run: function() { jumpToTarget('#experience'); } },
+    { group: 'Navigate', title: 'Projects', meta: '#projects · 4', icon: 'nav', keywords: 'portfolio systems', run: function() { jumpToTarget('#projects'); } },
+    { group: 'Navigate', title: 'Skills', meta: '#skills · 5', icon: 'nav', keywords: 'stack languages frameworks', run: function() { jumpToTarget('#skills'); } },
+    { group: 'Navigate', title: 'Education & Publications', meta: '#education · 6', icon: 'nav', keywords: 'aiub degree msc bsc paper doi', run: function() { jumpToTarget('#education'); } },
+    { group: 'Projects (Inspect)', title: 'ELOBOOKS', meta: 'Inventory SaaS', icon: 'proj', keywords: 'graphql websocket microservice cloudsight rbac', run: function() { jumpToTarget('#project-elobooks'); openProjectDrawer(0); } },
+    { group: 'Projects (Inspect)', title: 'Recruitment Platform', meta: 'REST & Event-driven', icon: 'proj', keywords: 'rest job matching', run: function() { jumpToTarget('#project-recruitment'); openProjectDrawer(1); } },
+    { group: 'Projects (Inspect)', title: 'Aero & Aero B2B', meta: 'NestJS · E-commerce', icon: 'proj', keywords: 'nestjs node bkash cod b2b', run: function() { jumpToTarget('#project-aero'); openProjectDrawer(2); } },
+    { group: 'Projects (Inspect)', title: 'BagFlyers', meta: 'Hand-carry PaaS', icon: 'proj', keywords: 'rest database', run: function() { jumpToTarget('#project-bagflyers'); openProjectDrawer(3); } },
+    { group: 'Projects (Inspect)', title: 'The NOORSTUDY', meta: 'Multi-tenant · RBAC', icon: 'proj', keywords: 'admin multi-tenancy education', run: function() { jumpToTarget('#project-noorstudy'); openProjectDrawer(4); } },
+    { group: 'Actions', title: 'Toggle UI / JSON View', meta: 'Shortcut J', icon: 'action', keywords: 'schema raw json code api inspect', run: function() {
+      var next = document.body.getAttribute('data-view') === 'json' ? 'ui' : 'json';
+      setViewMode(next);
+    }},
     { group: 'Actions', title: 'Preview CV (PDF)', meta: 'Modal', icon: 'action', keywords: 'resume pdf view', run: function() { openCvModal(); } },
     { group: 'Actions', title: 'Download CV (PDF)', meta: 'File', icon: 'action', keywords: 'resume save download', run: function() {
       var a = document.createElement('a');
@@ -2420,7 +3620,8 @@ a.hero-contact-item:hover{color:var(--primary)}
       a.download = 'Md_Tawhid_Sultan_CV.pdf';
       a.click();
     }},
-    { group: 'Actions', title: 'Toggle Light / Dark Mode', meta: 'Theme', icon: 'action', keywords: 'appearance dark light color', run: function() { toggleTheme(); } },
+    { group: 'Actions', title: 'Toggle Light / Dark Mode', meta: 'Shortcut T', icon: 'action', keywords: 'appearance dark light color theme', run: function() { toggleTheme(); } },
+    { group: 'Actions', title: 'Keyboard Shortcuts', meta: 'Shortcut ?', icon: 'action', keywords: 'keys help cheat sheet', run: function() { openShortcutsModal(); } },
     { group: 'Actions', title: 'Copy Email Address', meta: 'tawhidaiub37@gmail.com', icon: 'action', keywords: 'mail contact', run: function() { copyText('tawhidaiub37@gmail.com', 'Email'); } },
     { group: 'Actions', title: 'Copy Phone Number', meta: '(+88) 01708 919 548', icon: 'action', keywords: 'call telephone contact', run: function() { copyText('(+88) 01708 919 548', 'Phone number'); } },
     { group: 'Actions', title: 'Copy Publication DOI', meta: '10.5120/ijca2021921309', icon: 'action', keywords: 'paper research citation', run: function() { copyText('10.5120/ijca2021921309', 'DOI'); } },
@@ -2453,7 +3654,7 @@ a.hero-contact-item:hover{color:var(--primary)}
       if (!q) return true;
       var hay = (cmd.title + ' ' + cmd.meta + ' ' + (cmd.keywords || '')).toLowerCase();
       return hay.indexOf(q) !== -1;
-    }).slice(0, 18);
+    }).slice(0, 21);
 
     cmdSelectedIdx = 0;
     cmdList.innerHTML = '';
@@ -2541,7 +3742,9 @@ a.hero-contact-item:hover{color:var(--primary)}
     if (!cmdModal) return;
     cmdModal.classList.remove('open');
     cmdModal.setAttribute('aria-hidden', 'true');
-    if (!cvModal || !cvModal.classList.contains('open')) document.body.style.overflow = '';
+    if ((!cvModal || !cvModal.classList.contains('open')) && (!drawerEl || !drawerEl.classList.contains('open')) && (!shortcutsModal || !shortcutsModal.classList.contains('open'))) {
+      document.body.style.overflow = '';
+    }
     if (!skipRestore && cmdReturnFocus && typeof cmdReturnFocus.focus === 'function') cmdReturnFocus.focus();
   }
 
@@ -2567,6 +3770,19 @@ a.hero-contact-item:hover{color:var(--primary)}
   }
 
   /* ---------- Global Keyboard Shortcuts ---------- */
+  function isTypingTarget(el) {
+    if (!el) return false;
+    var tag = el.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable;
+  }
+
+  function anyModalOpen() {
+    return (cmdModal && cmdModal.classList.contains('open')) ||
+      (cvModal && cvModal.classList.contains('open')) ||
+      (drawerEl && drawerEl.classList.contains('open')) ||
+      (shortcutsModal && shortcutsModal.classList.contains('open'));
+  }
+
   window.addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
@@ -2577,16 +3793,44 @@ a.hero-contact-item:hover{color:var(--primary)}
       }
       return;
     }
+
     if (e.key === 'Escape') {
-      if (cmdModal && cmdModal.classList.contains('open')) {
-        closeCmdModal(false);
-      } else if (cvModal && cvModal.classList.contains('open')) {
-        closeCvModal();
-      } else if (mobileNav && mobileNav.classList.contains('open')) {
-        setMobileNav(false);
+      if (cmdModal && cmdModal.classList.contains('open')) closeCmdModal(false);
+      else if (shortcutsModal && shortcutsModal.classList.contains('open')) closeShortcutsModal();
+      else if (drawerEl && drawerEl.classList.contains('open')) closeProjectDrawer();
+      else if (cvModal && cvModal.classList.contains('open')) closeCvModal();
+      else if (mobileNav && mobileNav.classList.contains('open')) setMobileNav(false);
+      return;
+    }
+
+    if (e.ctrlKey || e.metaKey || e.altKey || isTypingTarget(e.target) || anyModalOpen()) return;
+
+    if (e.key === '?') {
+      e.preventDefault();
+      openShortcutsModal();
+    } else if (e.key.toLowerCase() === 'j') {
+      e.preventDefault();
+      setViewMode(document.body.getAttribute('data-view') === 'json' ? 'ui' : 'json');
+    } else if (e.key.toLowerCase() === 't') {
+      e.preventDefault();
+      toggleTheme();
+    } else if (e.key >= '1' && e.key <= '6') {
+      var targetSec = sections[parseInt(e.key, 10) - 1];
+      if (targetSec) {
+        e.preventDefault();
+        jumpToTarget('#' + targetSec.id);
       }
     }
   });
+
+  /* ---------- Highlight Deep-Linked Project on Load ---------- */
+  if (window.location.hash && window.location.hash.indexOf('#project-') === 0) {
+    var linked = document.querySelector(window.location.hash);
+    if (linked && linked.classList.contains('project-card')) {
+      linked.classList.add('is-highlighted');
+      setTimeout(function() { linked.classList.remove('is-highlighted'); }, 2200);
+    }
+  }
 })();
 </script>
 
